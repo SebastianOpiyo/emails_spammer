@@ -45,8 +45,7 @@ def delete_campaign(campaign_id:int):
 
 # Get campaign summary.
 def get_campaign_summary(campaign_id=None):
-    # get summary of a campaign
-    if campaign_id:
+    if campaign_id: 
         summaries = api.campaigns.summary()
         print(summaries)
     else:
