@@ -12,3 +12,6 @@
 
 # How to setup Mailhog
 - 
+
+NB:- My Notes
+IP: 172.16.30.99
