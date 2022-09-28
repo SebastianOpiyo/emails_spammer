@@ -1,5 +1,7 @@
 
 # Environments
+*.pyc
+.idea
 .env
 .venv
 env/
