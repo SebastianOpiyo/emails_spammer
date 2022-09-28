@@ -1,5 +1,8 @@
 #!/usr/bin/env python 
 
+
+# The link below handles most questions of Gitter.
+# https://gitter.im/gophish/gophish?at=572d0298a351d8310951a2e4
 import json
 import requests
 
