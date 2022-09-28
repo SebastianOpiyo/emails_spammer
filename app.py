@@ -7,7 +7,7 @@ from jinja2 import TemplateNotFound
 
 app = Flask(__name__)
 API_KEY = '4cd6dbec0d8a329c69e2d73499465786cb5fbcc8d717241a6d2698ac660e9eb4'
-BASE_URL= 'https://localhost:3333'
+BASE_URL= 'https://localhost:3333/api/templates'
 api = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
 
 
