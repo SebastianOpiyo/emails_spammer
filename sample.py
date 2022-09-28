@@ -4,8 +4,8 @@ from flask import jsonify
 import requests
 
 
-API_KEY = '4cd6dbec0d8a329c69e2d73499465786cb5fbcc8d717241a6d2698ac660e9eb4'
-BASE_URL= 'http://localhost:3333'
+API_KEY = '703d6d6d4f3c5fbc00861221333f5c3960f5971b3bebfc7928ce014e78dab579'
+BASE_URL= 'http://localhost:3333/api/'
 api = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
 
 
