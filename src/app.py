@@ -5,6 +5,7 @@ from gophish import Gophish, models, api
 from gophish.models import *
 
 
+
 @click.group()
 def main():
     """Running the Email Spammer Application"""
