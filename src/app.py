@@ -5,7 +5,6 @@ from gophish import Gophish, models, api
 from gophish.models import *
 
 
-
 @click.group()
 def main():
     """Running the Email Spammer Application"""
@@ -23,6 +22,7 @@ def web(host: str, port: int):
 def testapi():
     from api_points import test_api
     test_api()
+
 
 if __name__ == "__main__":
     main()
