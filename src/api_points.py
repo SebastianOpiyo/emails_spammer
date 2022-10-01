@@ -17,14 +17,16 @@ def test_api():
     print({"result": [result.content]})
 
 
-# Reset API Key
+# RESET API KEY
 def reset_api_key():
+    """TODO: To be worked on."""
     print(f'Reset the API Key')
 
 
+# CAMPAIGNS
 # Retrieve all campaigns
 def retrieve_all_campaign():
-    # Get a list of all the campaigns
+    """Get a list of all the campaigns"""
     result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
     print({"result": [result.content], "Status Code": {result.status_code}})
 
@@ -38,6 +40,7 @@ def retrieve_single_campaign(campaign_id):
 
 # Create a new Campaign
 def create_email_campign():
+    """TODO: To be worked on."""
     groups = [Group(name='Existing Group')]
     page = Page(name='Existing Page')
     template = Template(name='Existing Template')
@@ -70,13 +73,56 @@ def mark_campaign_complete(campaign_id: int):
 
 
 # GROUPS
+def get_groups():
+    """Get groups"""
+    result = requests.get(f'{BASE_URL}/groups?api_key={API_KEY}', verify=False)
+    print({"Groups": result.content, "status code": result.status_code})
+
+
+def get_group_by_id(group_id:int):
+    """Get a group by Id"""
+    result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
+    print({"Groups": result.content, "status code": result.status_code})
+
+
+def create_group():
+    """Create a group"""
+    pass
+
+
+def update_group():
+    """Update a group."""
+    pass
+
+
+def delete_group(group_id:int):
+    """Delete a group."""
+    result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
+    print({"Groups": result.content, "status code": result.status_code})
+
 
 # TEMPLATES
 def get_all_templates():
     templates = [API.templates.get()]
     for template in templates:
         print(template)
-    # print(json.dumps(templates))
+
+
+def get_template_by_id():
+    result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
+    print({"Groups": result.content, "status code": result.status_code})
+
+
+def create_template():
+    pass
+
+
+def update_template():
+    pass
+
+
+def delete_template():
+    pass
 
 
 # LANDING PAGES
@@ -103,9 +149,28 @@ def modify_landing_page():
     # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
     pass
 
+def delete_landing_page():
+    pass
 
 # SENDING PROFILE
+def get_sending_profile():
+    pass
 
+
+def get_profile_by_id():
+    pass
+
+
+def create_profile():
+    pass
+
+
+def update_profile():
+    pass
+
+
+def delete_profile():
+    pass
 
 if __name__ == '__main__':
     # test_api()
