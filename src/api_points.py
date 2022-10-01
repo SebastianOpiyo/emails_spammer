@@ -4,8 +4,8 @@ from jinja2 import TemplateNotFound
 import json
 import requests
 
-API_KEY = '703d6d6d4f3c5fbc00861221333f5c3960f5971b3bebfc7928ce014e78dab579'
-BASE_URL = 'https://172.16.30.99:3333/api/'
+API_KEY = '3e35419d03ca86bd6dfa5e89f0e27a08d2832a7e452686c9068216a112e224a2'
+BASE_URL = 'https://127.0.0.1:3333/api/'
 API = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
 
 
@@ -26,16 +26,14 @@ def reset_api_key():
 def retrieve_all_campaign():
     # Get a list of all the campaigns
     result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
-    print({"result": [result.content]})
+    print({"result": [result.content], "Status Code": {result.status_code}})
 
 
 # Retrieve one campaign
 def retrieve_single_campaign(campaign_id):
-    # Get a one campaign
-    campaign = API.campaigns.get(campaign_id=campaign_id)
-    if not campaign:
-        return jsonify({"msg": "No Campaigns at the moment", "status": "400"})
-    return make_response(campaign, 200)
+    """ Get one campaign"""
+    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
+    print({"result": [result.content]})
 
 
 # Create a new Campaign
@@ -53,20 +51,23 @@ def create_email_campign():
     print(f'Campaign with ID: {campaign.id}, created successfuly.')
 
 
-# Delete campaign by ID
+def get_campaign_summary(campaign_id):
+    """Get campaign summary."""
+    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}/summary?api_key={API_KEY}', verify=False)
+    print(f'API Summary result!')
+    print({"summary": result.content, "status code": result.status_code})
+
+
 def delete_campaign(campaign_id: int):
-    # Delete a campaign
-    API.campaigns.delete(campaign_id=campaign_id)
+    """Delete a campaign"""
+    result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
+    print({"Delete msg": result.content, "status code": result.status_code})
 
 
-# Get campaign summary.
-def get_campaign_summary(campaign_id=None):
-    if campaign_id:
-        summaries = API.campaigns.summary()
-        print(summaries)
-    else:
-        summary = API.campaigns.summary(campaign_id=campaign_id)
-        print(summary)
+def mark_campaign_complete(campaign_id: int):
+    result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
+    print({"Complete campaign": result.content, "status code": result.status_code})
+
 
 # GROUPS
 
@@ -77,11 +78,39 @@ def get_all_templates():
         print(template)
     # print(json.dumps(templates))
 
+
 # LANDING PAGES
+def get_landing_pages():
+    """Get all the landing pages"""
+    result = requests.get(f'{BASE_URL}/pages?api_key={API_KEY}', verify=False)
+    print({"Landing Pages": result.content, "status code": result.status_code})
+
+
+def get_landing_page(lp_id: int):
+    """Get landing page by ID"""
+    result = requests.get(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
+    print({"One Landing Page": result.content, "status code": result.status_code})
+
+
+def create_landing_page():
+    # ask user for the input.
+    # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
+    pass
+
+
+def modify_landing_page():
+    # method: put
+    # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
+    pass
+
 
 # SENDING PROFILE
 
 
 if __name__ == '__main__':
-    test_api()
+    # test_api()
+    # retrieve_all_campaign()
+    # retrieve_single_campaign(1)
+    # get_campaign_summary(1)
+    delete_campaign(1)
     # get_all_templates()
