@@ -20,7 +20,8 @@ def test_api():
 # RESET API KEY
 def reset_api_key():
     """TODO: To be worked on."""
-    print(f'Reset the API Key')
+    result = requests.post(f'{BASE_URL}/reset_api/?api_key={API_KEY}', verify=False)
+    print(f'New API Key: {result.content}')
 
 
 # CAMPAIGNS
@@ -103,17 +104,18 @@ def delete_group(group_id:int):
 
 # TEMPLATES
 def get_all_templates():
-    templates = [API.templates.get()]
-    for template in templates:
-        print(template)
+    result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
+    print({"Landing Pages": result.content, "status code": result.status_code})
 
 
 def get_template_by_id():
-    result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
+    temp_id = input(f'Enter template ID')
+    result = requests.get(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
     print({"Groups": result.content, "status code": result.status_code})
 
 
 def create_template():
+    # Template attributes:  id, name, subject, text, html, modified_date, attachments
     pass
 
 
@@ -122,7 +124,9 @@ def update_template():
 
 
 def delete_template():
-    pass
+    temp_id = input(f'Enter template ID')
+    result = requests.delete(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
+    print({"Groups": result.content, "status code": result.status_code})
 
 
 # LANDING PAGES
@@ -141,7 +145,14 @@ def get_landing_page(lp_id: int):
 def create_landing_page():
     # ask user for the input.
     # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
-    pass
+    name = input(f'Name of Landing Page:')
+    html = input(f'HTML of Landing Page:')
+    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
+    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
+    redirect_url = input(f'Enter Redirect URL:')
+    modified_date = input(f'Enter Date:')
+
+    # Write code to post
 
 
 def modify_landing_page():
@@ -149,16 +160,24 @@ def modify_landing_page():
     # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
     pass
 
+
 def delete_landing_page():
-    pass
+    lp_id = input(f'Enter template ID')
+    result = requests.delete(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
+    print({"Delete": result.content, "status code": result.status_code})
+
 
 # SENDING PROFILE
+
 def get_sending_profile():
-    pass
+    result = requests.get(f'{BASE_URL}/smtp?api_key={API_KEY}', verify=False)
+    print({"Profile": result.content, "status code": result.status_code})
 
 
 def get_profile_by_id():
-    pass
+    prof_id = input(f'Enter profile ID: ')
+    result = requests.get(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
+    print({"Profile": result.content, "status code": result.status_code})
 
 
 def create_profile():
@@ -170,7 +189,10 @@ def update_profile():
 
 
 def delete_profile():
-    pass
+    prof_id = input(f'Enter profile ID: ')
+    result = requests.delete(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
+    print({"Delete Profile": result.content, "status code": result.status_code})
+
 
 if __name__ == '__main__':
     # test_api()
