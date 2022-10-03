@@ -143,22 +143,45 @@ def get_landing_page(lp_id: int):
 
 
 def create_landing_page():
-    # ask user for the input.
+    name = input(f'Name of Landing Page:')
+    html = input(f'HTML of Landing Page:')
+    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
+    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
+    redirect_url = input(f'Enter Redirect URL:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+
+    data = {
+        "name": name,
+        "html": html,
+        "capture_credentials": capture_credentials,
+        "capture_passwords": capture_password,
+        "redirect_url": redirect_url,
+        "modified_date": modified_date
+    }
+    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
+
+
+def modify_landing_page():
+    # method: put
     # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
     name = input(f'Name of Landing Page:')
     html = input(f'HTML of Landing Page:')
     capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
     capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
     redirect_url = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')
+    modified_date = input(f'Enter Date:')  # use date.now()
 
-    # Write code to post
-
-
-def modify_landing_page():
-    # method: put
-    # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
-    pass
+    data = {
+        "name": name,
+        "html": html,
+        "capture_credentials": capture_credentials,
+        "capture_passwords": capture_password,
+        "redirect_url": redirect_url,
+        "modified_date": modified_date
+    }
+    post_result = requests.put(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_landing_page():
