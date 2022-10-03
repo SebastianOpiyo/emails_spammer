@@ -49,10 +49,10 @@ def create_email_campign():
     url = 'http://phishing_server'
     campaign = Campaign(
         name='Example Campaign', groups=groups, page=page,
-        template=template, smtp=smtp)
+        template=template, smtp=smtp, url=url)
 
-    campaign = API.campaigns.post(campaign)
-    print(f'Campaign with ID: {campaign.id}, created successfuly.')
+    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=campaign)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def get_campaign_summary(campaign_id):
@@ -69,7 +69,8 @@ def delete_campaign(campaign_id: int):
 
 
 def mark_campaign_complete(campaign_id: int):
-    result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
+    # TODO: Check this one out
+    result = requests.post(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
     print({"Complete campaign": result.content, "status code": result.status_code})
 
 
@@ -88,12 +89,50 @@ def get_group_by_id(group_id:int):
 
 def create_group():
     """Create a group"""
-    pass
+    name = input(f'Name of Group:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+    email = input(f'Email of Target:')
+    first_name = input(f'First Name:')
+    last_name = input(f'Last Name:')
+    position = input(f'Position:')
+
+    data = {
+        "name": name,
+        "modified_date": modified_date,
+        "target": [{
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+            "position": position
+        }]
+    }
+    post_result = requests.post(f'{BASE_URL}/groups/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def update_group():
     """Update a group."""
-    pass
+    # Ask for the group ID
+    group_id = input(f'Enter Group ID:')
+    name = input(f'Name of Group:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+    email = input(f'Email of Target:')
+    first_name = input(f'First Name:')
+    last_name = input(f'Last Name:')
+    position = input(f'Position:')
+
+    data = {
+        "name": name,
+        "modified_date": modified_date,
+        "target": [{
+            "email": email,
+            "first_name": first_name,
+            "last_name": last_name,
+            "position": position
+        }]
+    }
+    post_result = requests.post(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_group(group_id:int):
@@ -116,11 +155,47 @@ def get_template_by_id():
 
 def create_template():
     # Template attributes:  id, name, subject, text, html, modified_date, attachments
-    pass
+    name = input(f'Name of Group:')
+    subject = input(f'Subject:')
+    text = input(f'Text:')
+    html = input(f'Html:')
+    attachments = input(f'upload attachment:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+
+
+    data = {
+        "name": name,
+        "subject": subject,
+        "text": text,
+        "html": html,
+        "modified_date": modified_date,
+        "attachments": attachments
+    }
+    post_result = requests.post(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
+
 
 
 def update_template():
-    pass
+    temp_id = input(f'Enter tempalate ID')
+    name = input(f'Name of Group:')
+    subject = input(f'Subject:')
+    text = input(f'Text:')
+    html = input(f'Html:')
+    attachments = input(f'upload attachment:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+
+
+    data = {
+        "name": name,
+        "subject": subject,
+        "text": text,
+        "html": html,
+        "modified_date": modified_date,
+        "attachments": attachments
+    }
+    post_result = requests.put(f'{BASE_URL}/templates/{temp_id}?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_template():
@@ -163,8 +238,6 @@ def create_landing_page():
 
 
 def modify_landing_page():
-    # method: put
-    # input data: id, name, html, capture_credentials, capture_passwords, redirect_url, modified_date
     name = input(f'Name of Landing Page:')
     html = input(f'HTML of Landing Page:')
     capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
@@ -204,11 +277,56 @@ def get_profile_by_id():
 
 
 def create_profile():
-    pass
+    name = input(f'Name of profile:')
+    username = input(f'Enter Username(Optional):')
+    password = input(f'Enter password (Optional):')
+    host = input(f'Capture Password on Landing page (Asw: True/False):')
+    interface_type = input(f'Enter Redirect URL:')
+    from_address= input(f'Enter Redirect URL:')
+    ingnore_cert_errors = input(f'Enter Redirect URL:')
+    headers= input(f'Enter Redirect URL:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+
+    data = {
+        "name": name,
+        "username": username,
+        "password": password,
+        "host": host,
+        "interface_type": interface_type,
+        "from_address": from_address,
+        "ingore_cert_errors": ingnore_cert_errors,
+        "headers": headers,
+        "modified_date": modified_date
+    }
+    post_result = requests.post(f'{BASE_URL}/smtp/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def update_profile():
-    pass
+    prof_id = input(f'Enter profile ID')
+    name = input(f'Name of profile:')
+    username = input(f'Enter Username(Optional):')
+    password = input(f'Enter password (Optional):')
+    host = input(f'Capture Password on Landing page (Asw: True/False):')
+    interface_type = input(f'Enter Redirect URL:')
+    from_address= input(f'Enter Redirect URL:')
+    ingnore_cert_errors = input(f'Enter Redirect URL:')
+    headers= input(f'Enter Redirect URL:')
+    modified_date = input(f'Enter Date:')  # use date.now()
+
+    data = {
+        "name": name,
+        "username": username,
+        "password": password,
+        "host": host,
+        "interface_type": interface_type,
+        "from_address": from_address,
+        "ingore_cert_errors": ingnore_cert_errors,
+        "headers": headers,
+        "modified_date": modified_date
+    }
+    post_result = requests.put(f'{BASE_URL}/smtp/{prof_id}/?api_key={API_KEY}', verify=False, data=data)
+    print({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_profile():
@@ -218,9 +336,11 @@ def delete_profile():
 
 
 if __name__ == '__main__':
+    # TODO: Create a main controller and a simple web interface to view the results.
     # test_api()
     # retrieve_all_campaign()
     # retrieve_single_campaign(1)
     # get_campaign_summary(1)
-    delete_campaign(1)
+    # delete_campaign(1)
     # get_all_templates()
+    pass
