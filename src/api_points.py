@@ -14,6 +14,8 @@ def test_api():
     """Testing the API end point to ensure all is working fine."""
     result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
     print('Test Result \n')
+    # for k,v in result.content:
+    #     print(f"{k}: {v}")
     print({"result": [result.content]})
 
 
@@ -333,14 +335,3 @@ def delete_profile():
     prof_id = input(f'Enter profile ID: ')
     result = requests.delete(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
     print({"Delete Profile": result.content, "status code": result.status_code})
-
-
-if __name__ == '__main__':
-    # TODO: Create a main controller and a simple web interface to view the results.
-    # test_api()
-    # retrieve_all_campaign()
-    # retrieve_single_campaign(1)
-    # get_campaign_summary(1)
-    # delete_campaign(1)
-    # get_all_templates()
-    pass
