@@ -41,7 +41,6 @@ def main():
 def testapi():
     from api_points import test_api
     test_api()
-    logging.captureWarnings(True)
 
 
 # INITIATE WEB APP
@@ -65,8 +64,8 @@ def resetapikey():
 # CAMPAIGNS
 
 @click.command()
-@click.option('-h', help="Get all campaigns that exist")
 def getAllCampaigns():
+    """Get a list of all the campaigns"""
     from api_points import retrieve_all_campaign
     retrieve_all_campaign()
 
@@ -75,6 +74,7 @@ def getAllCampaigns():
 @click.option('-h', help="Get a single campaign")
 @click.option('--campaignId', help="Get a single campaign")
 def getSingleCampaign(campaignId):
+    """ Get one campaign"""
     from api_points import retrieve_single_campaign
     retrieve_single_campaign(campaignId)
 
@@ -82,6 +82,7 @@ def getSingleCampaign(campaignId):
 @click.command()
 @click.option('-h', help="Create a new campaign")
 def createNewCampaign():
+    """Create a new campaign"""
     from api_points import create_email_campign
     create_email_campign()
     
@@ -89,6 +90,7 @@ def createNewCampaign():
 @click.command()
 @click.option('-h', help="Get campaign summary.")
 def getCampaignSummary():
+    """Get campaign summary."""
     from api_points import get_campaign_summary
     get_campaign_summary()
     
@@ -96,6 +98,7 @@ def getCampaignSummary():
 @click.command()
 @click.option('-h', help="Delete a campaign")
 def deleteCampaign():
+    """Delete a campaign"""
     from api_points import delete_campaign
     delete_campaign()
     
@@ -103,6 +106,7 @@ def deleteCampaign():
 @click.command()
 @click.option('-h', help="Mark Campaign as complete")
 def markCampaignComplete():
+    """Mark Campaign as complete."""
     from api_points import mark_campaign_complete
     mark_campaign_complete()
 
@@ -112,6 +116,7 @@ def markCampaignComplete():
 @click.command()
 @click.option('-h', help="Get all Groups that exist")
 def getGroups():
+    """Get groups"""
     from api_points import get_groups
     get_groups()
     
@@ -119,6 +124,7 @@ def getGroups():
 @click.command()
 @click.option('-h', help="Get Group by ID")
 def getGroupById():
+    """Get a group by Id"""
     from api_points import get_group_by_id
     get_group_by_id()
     
@@ -126,6 +132,7 @@ def getGroupById():
 @click.command()
 @click.option('-h', help="Create a Group")
 def createGroup():
+    """Create a group"""
     from api_points import create_group
     create_group()
     
@@ -133,6 +140,7 @@ def createGroup():
 @click.command()
 @click.option('-h', help="Update a group")
 def updateGroup():
+    """Update a group."""
     from api_points import update_group
     update_group()
     
@@ -140,6 +148,7 @@ def updateGroup():
 @click.command()
 @click.option('-h', help="Delete a Group")
 def deleteGroup():
+    """Delete a group."""
     from api_points import delete_group
     delete_group()
 
@@ -149,6 +158,7 @@ def deleteGroup():
 @click.command()
 @click.option('-h', help="Get all Templates")
 def getAllTempalates():
+    """Get all templates"""
     from api_points import get_all_templates
     get_all_templates()
     
@@ -156,36 +166,42 @@ def getAllTempalates():
 @click.command()
 @click.option('-h', help="Get One template")
 def getTemplateById():
+    """Get template by ID"""
     from api_points import get_template_by_id
     get_template_by_id()
     
 @click.command()
 @click.option('-h', help="Create a new Template")
 def createTemplate():
+    """Create a template"""
     from api_points import create_template
     create_template()
     
 @click.command()
 @click.option('-h', help="Update tempalate")
 def updateTemplate():
+    """Update a template"""
     from api_points import update_template
     update_template()
     
 @click.command()
 @click.option('-h', help="Delete a Template")
 def deleteTemplate():
+    """Delete a template"""
     from api_points import delete_template
     delete_template()
     
 @click.command()
 @click.option('-h', help="Get all landing pages")
 def getLandingPages():
+    """Get landing page"""
     from api_points import get_landing_pages
     get_landing_pages()
     
 @click.command()
 @click.option('-h', help="Get One Landing Page")
 def getLandingPageById():
+    """Get a landing page by its ID"""
     from api_points import get_landing_page
     get_landing_page()
     
@@ -193,6 +209,7 @@ def getLandingPageById():
 @click.command()
 @click.option('-h', help="Create a Landing page")
 def createLandingPage():
+    """Create a landing page"""
     from api_points import create_landing_page
     create_landing_page()
     
@@ -200,6 +217,7 @@ def createLandingPage():
 @click.command()
 @click.option('-h', help="Update landing page")
 def updateLandingPage():
+    """Update a landing page"""
     from api_points import modify_landing_page
     modify_landing_page()
     
@@ -207,6 +225,7 @@ def updateLandingPage():
 @click.command()
 @click.option('-h', help="Delete landing page")
 def deletelandingPage():
+    """Delete a landing page."""
     from api_points import delete_landing_page
     delete_landing_page()
 
@@ -216,18 +235,21 @@ def deletelandingPage():
 @click.command()
 @click.option('-h', help="Get all sending profile")
 def getSendingProfile():
+    """Get sending profile"""
     from api_points import get_sending_profile
     get_sending_profile()
     
 @click.command()
 @click.option('-h', help="Get Profile by ID")
 def getProfileById():
+    """Get a profile by ID"""
     from api_points import get_profile_by_id
     get_profile_by_id()
     
 @click.command()
 @click.option('-h', help="Create profile")
 def createProfile():
+    """Create a profile"""
     from api_points import create_profile
     create_profile()
     
@@ -236,12 +258,14 @@ def createProfile():
 @click.command()
 @click.option('-h', help="Update profile")
 def updateProfile():
+    """Update a profile"""
     from api_points import update_profile
     update_profile()
     
 @click.command()
 @click.option('-h', help="Delete profile")
 def deleteProfile():
+    """Delete a profile"""
     from api_points import delete_profile
     delete_profile()
     
