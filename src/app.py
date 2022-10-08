@@ -1,8 +1,25 @@
+from importlib.metadata import entry_points
+import logging
 import click
 
 from flask import Flask, render_template, request
 from gophish import Gophish, models, api
 from gophish.models import *
+from setuptools import setup
+
+
+#   SETUP TOOL
+# setup(
+#     name="emailspammer",
+#     version='0.1',
+#     py_modules=['app']
+#     install_requires=[
+#         'Click',
+#     ],
+#     entry_points='''
+#         [console_scripts]
+#         emailspammer=app:cli
+#     ''')
 
 
 # COMMANDS GROUP FUNCTION
@@ -20,9 +37,11 @@ def main():
 # TEST API ENDPOINT 
 
 @click.command()
+# @click.option('--versbose', is_flag=True, help="Will print verbose message")
 def testapi():
     from api_points import test_api
     test_api()
+    logging.captureWarnings(True)
 
 
 # INITIATE WEB APP
@@ -36,7 +55,6 @@ def web(host: str, port: int):
 
 
 # RESET API KEY & FIX AUTH ISSUES
-
 @click.command()
 @click.option('--h', help='Reset or renew API key')
 def resetapikey():
@@ -55,9 +73,10 @@ def getAllCampaigns():
 
 @click.command()
 @click.option('-h', help="Get a single campaign")
-def getSingleCampaign():
+@click.option('--campaignId', help="Get a single campaign")
+def getSingleCampaign(campaignId):
     from api_points import retrieve_single_campaign
-    retrieve_single_campaign()
+    retrieve_single_campaign(campaignId)
 
 
 @click.command()

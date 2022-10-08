@@ -1,8 +1,13 @@
+import logging
 from gophish import Gophish, models, api
 from gophish.models import *
 from jinja2 import TemplateNotFound
 import json
 import requests
+import click
+import urllib3
+
+urllib3.disable_warnings()
 
 API_KEY = '3e35419d03ca86bd6dfa5e89f0e27a08d2832a7e452686c9068216a112e224a2'
 BASE_URL = 'https://127.0.0.1:3333/api/'
@@ -13,17 +18,18 @@ API = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
 def test_api():
     """Testing the API end point to ensure all is working fine."""
     result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    print('Test Result \n')
+    logging.captureWarnings(True)
+    click.echo('Test Result \n')
     # for k,v in result.content:
-    #     print(f"{k}: {v}")
-    print({"result": [result.content]})
+    #     click.echo(f"{k}: {v}")
+    click.echo({"result": [result.content]})
 
 
 # RESET API KEY
 def reset_api_key():
     """TODO: To be worked on."""
     result = requests.post(f'{BASE_URL}/reset_api/?api_key={API_KEY}', verify=False)
-    print(f'New API Key: {result.content}')
+    click.echo(f'New API Key: {result.content}')
 
 
 # CAMPAIGNS
@@ -31,14 +37,14 @@ def reset_api_key():
 def retrieve_all_campaign():
     """Get a list of all the campaigns"""
     result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
-    print({"result": [result.content], "Status Code": {result.status_code}})
+    click.echo({"result": [result.content], "Status Code": {result.status_code}})
 
 
 # Retrieve one campaign
 def retrieve_single_campaign(campaign_id):
     """ Get one campaign"""
     result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    print({"result": [result.content]})
+    click.echo({"result": [result.content]})
 
 
 # Create a new Campaign
@@ -54,39 +60,39 @@ def create_email_campign():
         template=template, smtp=smtp, url=url)
 
     post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=campaign)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def get_campaign_summary(campaign_id):
     """Get campaign summary."""
     result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}/summary?api_key={API_KEY}', verify=False)
-    print(f'API Summary result!')
-    print({"summary": result.content, "status code": result.status_code})
+    click.echo(f'API Summary result!')
+    click.echo({"summary": result.content, "status code": result.status_code})
 
 
 def delete_campaign(campaign_id: int):
     """Delete a campaign"""
     result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    print({"Delete msg": result.content, "status code": result.status_code})
+    click.echo({"Delete msg": result.content, "status code": result.status_code})
 
 
 def mark_campaign_complete(campaign_id: int):
     # TODO: Check this one out
     result = requests.post(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
-    print({"Complete campaign": result.content, "status code": result.status_code})
+    click.echo({"Complete campaign": result.content, "status code": result.status_code})
 
 
 # GROUPS
 def get_groups():
     """Get groups"""
     result = requests.get(f'{BASE_URL}/groups?api_key={API_KEY}', verify=False)
-    print({"Groups": result.content, "status code": result.status_code})
+    click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 def get_group_by_id(group_id:int):
     """Get a group by Id"""
     result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    print({"Groups": result.content, "status code": result.status_code})
+    click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 def create_group():
@@ -109,7 +115,7 @@ def create_group():
         }]
     }
     post_result = requests.post(f'{BASE_URL}/groups/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def update_group():
@@ -134,25 +140,25 @@ def update_group():
         }]
     }
     post_result = requests.post(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_group(group_id:int):
     """Delete a group."""
     result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    print({"Groups": result.content, "status code": result.status_code})
+    click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 # TEMPLATES
 def get_all_templates():
     result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    print({"Landing Pages": result.content, "status code": result.status_code})
+    click.echo({"Landing Pages": result.content, "status code": result.status_code})
 
 
 def get_template_by_id():
     temp_id = input(f'Enter template ID')
     result = requests.get(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    print({"Groups": result.content, "status code": result.status_code})
+    click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 def create_template():
@@ -174,7 +180,7 @@ def create_template():
         "attachments": attachments
     }
     post_result = requests.post(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 
@@ -197,26 +203,26 @@ def update_template():
         "attachments": attachments
     }
     post_result = requests.put(f'{BASE_URL}/templates/{temp_id}?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_template():
     temp_id = input(f'Enter template ID')
     result = requests.delete(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    print({"Groups": result.content, "status code": result.status_code})
+    click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 # LANDING PAGES
 def get_landing_pages():
     """Get all the landing pages"""
     result = requests.get(f'{BASE_URL}/pages?api_key={API_KEY}', verify=False)
-    print({"Landing Pages": result.content, "status code": result.status_code})
+    click.echo({"Landing Pages": result.content, "status code": result.status_code})
 
 
 def get_landing_page(lp_id: int):
     """Get landing page by ID"""
     result = requests.get(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    print({"One Landing Page": result.content, "status code": result.status_code})
+    click.echo({"One Landing Page": result.content, "status code": result.status_code})
 
 
 def create_landing_page():
@@ -236,7 +242,7 @@ def create_landing_page():
         "modified_date": modified_date
     }
     post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def modify_landing_page():
@@ -256,26 +262,26 @@ def modify_landing_page():
         "modified_date": modified_date
     }
     post_result = requests.put(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_landing_page():
     lp_id = input(f'Enter template ID')
     result = requests.delete(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    print({"Delete": result.content, "status code": result.status_code})
+    click.echo({"Delete": result.content, "status code": result.status_code})
 
 
 # SENDING PROFILE
 
 def get_sending_profile():
     result = requests.get(f'{BASE_URL}/smtp?api_key={API_KEY}', verify=False)
-    print({"Profile": result.content, "status code": result.status_code})
+    click.echo({"Profile": result.content, "status code": result.status_code})
 
 
 def get_profile_by_id():
     prof_id = input(f'Enter profile ID: ')
     result = requests.get(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    print({"Profile": result.content, "status code": result.status_code})
+    click.echo({"Profile": result.content, "status code": result.status_code})
 
 
 def create_profile():
@@ -301,7 +307,7 @@ def create_profile():
         "modified_date": modified_date
     }
     post_result = requests.post(f'{BASE_URL}/smtp/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def update_profile():
@@ -328,10 +334,10 @@ def update_profile():
         "modified_date": modified_date
     }
     post_result = requests.put(f'{BASE_URL}/smtp/{prof_id}/?api_key={API_KEY}', verify=False, data=data)
-    print({"Response": post_result.content, "Status Code": post_result.status_code})
+    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
 def delete_profile():
     prof_id = input(f'Enter profile ID: ')
     result = requests.delete(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    print({"Delete Profile": result.content, "status code": result.status_code})
+    click.echo({"Delete Profile": result.content, "status code": result.status_code})
