@@ -143,18 +143,31 @@ def getGroupById(group_id):
 
 @click.command()
 @click.option('--name', prompt="Enter Group Name:", help="Group name")
-
+@click.option('--email', prompt="Enter Target Email:", help="Email for the target")
+@click.option('--first_name', prompt="Enter Target First Name:", help="Target first name")
+@click.option('--last_name', prompt="Enter Target Last Name:", help="Target last name")
+@click.option('--position', prompt="Enter Target position:", help="Target position")
 def createGroup(email, first_name, last_name, position, name):
     """Create a group"""
-    from api_points import create_group
-    create_group(email, first_name, last_name, position, name)
+    target = list()
+    from api_points import create_group, add_target
+    add_target(target, email, first_name, last_name, position)
+    create_group(name, target)
 
 
 @click.command()
-def updateGroup():
+@click.option('--group_id', prompt="Enter Group ID:", help="Pass Group ID")
+@click.option('--name', prompt="Enter Group Name:", help="Edit Group name")
+@click.option('--email', prompt="Enter Target Email:", help="Edit Email for the target")
+@click.option('--first_name', prompt="Enter Target First Name:", help="Edit Target first name")
+@click.option('--last_name', prompt="Enter Target Last Name:", help="Edit Target last name")
+@click.option('--position', prompt="Enter Target position:", help="Edit Target position")
+def updateGroup(group_id, name, email, first_name, last_name, position):
     """Update a group."""
-    from api_points import update_group
-    update_group()
+    target = list()
+    from api_points import update_group, add_target
+    add_target(target, email, first_name, last_name, position)
+    update_group(int(group_id), name, target)
 
 
 @click.command()

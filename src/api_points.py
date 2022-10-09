@@ -39,7 +39,7 @@ def retrieve_all_campaign():
     if not data:
         click.secho('No Campaigns Created Yet', blink=True, bold=True, fg='red')
     for campaign in data:
-        click.secho('CAMPAIGNS', bold=True, fg='green')
+        click.secho('CAMPAIGNS', bold=True, fg='green', underline=True)
         click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
 
 
@@ -51,7 +51,7 @@ def retrieve_single_campaign(campaign_id: int):
         if data:
             click.secho('No Campaign with that ID Yet', blink=True, bold=True, fg='red')
         for campaign in data:
-            click.secho('CAMPAIGN', bold=True, fg='green')
+            click.secho('CAMPAIGN', bold=True, fg='green', underline=True)
             click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e), blink=True, bold=True, fg='red')
@@ -81,7 +81,7 @@ def get_campaign_summary(campaign_id):
     try:
         summary = API.campaigns.summary(campaign_id=campaign_id)
         if summary:
-            click.secho('Campaign Summary', bold=True, fg='green')
+            click.secho('Campaign Summary', bold=True, fg='green', underline=True)
             click.secho('Summary: {}'.format(summary), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e))
@@ -92,7 +92,7 @@ def get_campaigns_summaries():
     try:
         summaries = API.campaigns.summary()
         if summaries:
-            click.secho('Campaign Summaries', bold=True, fg='green')
+            click.secho('Campaign Summaries', bold=True, fg='green', underline=True)
             for summary in summaries:
                 click.secho('Summary: {}'.format(summary), fg='blue')
     except Exception as e:
@@ -134,65 +134,65 @@ def get_groups():
 
 def get_group_by_id(group_id: int):
     """Get a group by Id"""
-    result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    data = json.dumps({'data': result.content.decode('utf-8')})
-    click.echo(f"Group Data: {data}, \nStatus Code: {result.status_code}")
+    try:
+        group = API.groups.get(group_id=group_id)
+        if group:
+            click.secho('Group', bold=True, fg='green')
+            click.secho('Group Name: {} \nUser Targets: {}'.format(group.name, len(group.targets)), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-@click.option('--email', prompt="Enter Target Email:", help="Email for the target")
-@click.option('--first_name', prompt="Enter Target First Name:", help="Target first name")
-@click.option('--last_name', prompt="Enter Target Last Name:", help="Target last name")
-@click.option('--position', prompt="Enter Target position:", help="Target position")
 def add_target(targets: list, email: str, first_name: str, last_name: str, position: str):
     result = User(first_name=first_name, last_name=last_name, email=email, position=position)
     targets.append(result)
     click.secho('Target Added', fg='yellow')
+    click.secho(f"Do you want to add more target? [y/n]", nl=False, bold=True, fg='bright_blue')
+    char = click.getchar()
+    click.echo()
+    if char == 'y':
+        click.secho(f"\nAdd Target:", fg='green')
+        add_target(targets, email, first_name, last_name, position)
+        click.secho(f"Target Update: {targets}")
+    elif char == 'n':
+        click.secho(f"Target Before Abort: {targets}\n")
+        click.secho(f"Abort!:", fg='red')
+    else:
+        click.secho(f"Invalid input :(", fg='red')
 
 
-def create_group(email, first_name, last_name, position, name):
+def create_group(name: str, target: list):
     """Create a group"""
-    # TODO: Cater for extra information for extra targets.
+    group = Group(name=name, targets=target)
 
-    data = {
-        "name": name,
-        "modified_date": datetime.now(),
-        "target": [{
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "position": position
-        }]
-    }
-    post_data = json.dumps(data, indent=4, sort_keys=True, default=str)
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    post_result = requests.post(url=f'{BASE_URL}/groups/?api_key={API_KEY}', json=post_data, verify=False,
-                                headers=headers)
-    res_data = json.dumps({'data': post_result.content.decode('utf-8')})
-    click.echo({"Response": res_data, "Status Code": post_result.status_code})
+    try:
+        API.groups.post(group)
+        if True:
+            click.secho('Group Created Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def update_group(group_id, name, email, first_name, last_name, position):
+def update_group(group_id, name, target):
     """Update a group."""
-    # Ask for the group ID
-
-    data = {
-        "name": name,
-        "modified_date": json.dumps(datetime.now(), indent=4, sort_keys=True, default=str),
-        "target": [{
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "position": position
-        }]
-    }
-    post_result = requests.post(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    try:
+        group = API.groups.get(group_id=group_id)
+        edit_group = Group(name=name, target=target)
+        if group:
+            API.groups.put(edit_group)
+            click.secho('Group Updated Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def delete_group(group_id: int):
     """Delete a group."""
-    result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+    try:
+        API.groups.delete(group_id=group_id)
+        click.secho('Group With ID {} Deleted Successfully'.format(group_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Group not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # TEMPLATES
@@ -249,11 +249,13 @@ def update_template():
     click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
-def delete_template():
-    temp_id = input(f'Enter template ID')
-    result = requests.delete(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
-
+def delete_template(template_id: int):
+    try:
+        API.templates.delete(template_id=template_id)
+        click.secho('Template With ID {} Deleted Successfully'.format(template_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Template not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 # LANDING PAGES
 def get_landing_pages():
