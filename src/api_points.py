@@ -18,18 +18,18 @@ API = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
 def test_api():
     """Testing the API end point to ensure all is working fine."""
     result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    logging.captureWarnings(True)
+    data = json.loads(result.content)
     click.echo('Test Result \n')
-    # for k,v in result.content:
-    #     click.echo(f"{k}: {v}")
-    click.echo({"result": [result.content]})
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"result: {data}")
 
 
 # RESET API KEY
 def reset_api_key():
     """TODO: To be worked on."""
-    result = requests.post(f'{BASE_URL}/reset_api/?api_key={API_KEY}', verify=False)
-    click.echo(f'New API Key: {result.content}')
+    result = requests.post(f'{BASE_URL}/reset/?api_key={API_KEY}', verify=False)
+    data = json.dumps(result.content)
+    click.echo(f'New API Key: {data}')
 
 
 # CAMPAIGNS
