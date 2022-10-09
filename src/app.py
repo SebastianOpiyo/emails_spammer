@@ -72,62 +72,82 @@ def getAllCampaigns():
 
 
 @click.command()
-@click.option('--campaignId', help="Get a single campaign")
-def getSingleCampaign(campaignId):
+@click.option('--campaign_id', prompt="Enter Campaign ID:", help="Pass campaign ID")
+def getSingleCampaign(campaign_id):
     """ Get one campaign"""
     from api_points import retrieve_single_campaign
-    retrieve_single_campaign(campaignId)
+    retrieve_single_campaign(int(campaign_id))
 
 
 @click.command()
-def createNewCampaign():
+@click.option('--camp_name', prompt="Enter Campaign Name:", help="New campaign name")
+@click.option('--group_name', prompt="Enter Existing Group Name:", help="Existing Group name")
+@click.option('--page_name', prompt="Enter Existing Page Name:", help="Existing Page name")
+@click.option('--template_name', prompt="Enter Template Name:", help="Existing Template name")
+@click.option('--smtp', prompt="Enter Existing SMTP Name:", help="Existing SMTP")
+@click.option('--url', prompt="Enter URL:", help="Enter Phishing URL")
+def createNewCampaign(camp_name, group_name, page_name, template_name, smtp, url):
     """Create a new campaign"""
-    from api_points import create_email_campign
-    create_email_campign()
+    from api_points import create_email_campaign
+    create_email_campaign(camp_name=camp_name, group_name=group_name, page_name=page_name,template_name=template_name,
+                          smtp_name=smtp, url=url)
 
 
 @click.command()
-def getCampaignSummary():
+@click.option('--campaign_id', prompt="Enter Campaign ID:", help="Pass campaign ID")
+def getCampaignSummary(campaign_id):
     """Get campaign summary."""
     from api_points import get_campaign_summary
-    get_campaign_summary()
+    get_campaign_summary(campaign_id)
 
 
 @click.command()
-def deleteCampaign():
+def getCampaignsSummaries():
+    """Get campaign summary."""
+    from api_points import get_campaigns_summaries
+    get_campaigns_summaries()
+
+
+@click.command()
+@click.option('--campaign_id', prompt="Enter Campaign ID:", help="Pass campaign ID")
+def deleteCampaign(campaign_id):
     """Delete a campaign"""
     from api_points import delete_campaign
-    delete_campaign()
+    delete_campaign(campaign_id)
 
 
 @click.command()
-def markCampaignComplete():
+@click.option('--campaign_id', prompt="Enter Campaign ID:", help="Pass campaign ID")
+def markCampaignComplete(campaign_id):
     """Mark Campaign as complete."""
     from api_points import mark_campaign_complete
-    mark_campaign_complete()
+    mark_campaign_complete(campaign_id)
 
 
 # GROUPS
 
 @click.command()
 def getGroups():
-    """Get groups"""
+    """Get all groups"""
     from api_points import get_groups
     get_groups()
 
 
 @click.command()
-def getGroupById():
+@click.option('--group_id', prompt="Enter Group ID:", help="Pass Group ID")
+def getGroupById(group_id):
     """Get a group by Id"""
     from api_points import get_group_by_id
-    get_group_by_id()
+    get_group_by_id(group_id)
 
 
 @click.command()
-def createGroup():
+@click.option('--name', prompt="Enter Group Name:", help="Group name")
+
+def createGroup(email, first_name, last_name, position, name):
     """Create a group"""
     from api_points import create_group
-    create_group()
+    create_group(email, first_name, last_name, position, name)
 
 
 @click.command()
@@ -260,6 +280,7 @@ main.add_command(getAllCampaigns)
 main.add_command(getSingleCampaign)
 main.add_command(createNewCampaign)
 main.add_command(getCampaignSummary)
+main.add_command(getCampaignsSummaries)
 main.add_command(deleteCampaign)
 main.add_command(markCampaignComplete)
 main.add_command(getGroups)

@@ -1,17 +1,16 @@
-import logging
-from gophish import Gophish, models, api
-from gophish.models import *
-from jinja2 import TemplateNotFound
 import json
 import requests
 import click
 import urllib3
+from datetime import datetime
+from gophish import Gophish, models, api
+from gophish.models import *
 
 urllib3.disable_warnings()
 
 API_KEY = '3e35419d03ca86bd6dfa5e89f0e27a08d2832a7e452686c9068216a112e224a2'
 BASE_URL = 'https://127.0.0.1:3333/api/'
-API = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
+API = Gophish(API_KEY, verify=False)
 
 
 # TEST API
@@ -21,92 +20,142 @@ def test_api():
     data = json.loads(result.content)
     click.echo('Test Result \n')
     click.echo({"header_type": [result.headers['content-type']]})
-    click.echo(f"result: {data}")
+    click.echo(f"Test Response: {data}, \nStatus Code: {result.status_code}")
 
 
 # RESET API KEY
 def reset_api_key():
     """TODO: To be worked on."""
     result = requests.post(f'{BASE_URL}/reset/?api_key={API_KEY}', verify=False)
-    data = json.dumps(result.content)
-    click.echo(f'New API Key: {data}')
+    data = json.dumps({'result': result.content.decode('utf-8')})
+    click.echo(f"NEW API KEY: {data}, \nStatus Code: {result.status_code}")
 
 
 # CAMPAIGNS
 # Retrieve all campaigns
 def retrieve_all_campaign():
     """Get a list of all the campaigns"""
-    result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
-    click.echo({"result": [result.content], "Status Code": {result.status_code}})
+    data = API.campaigns.get()
+    if not data:
+        click.secho('No Campaigns Created Yet', blink=True, bold=True, fg='red')
+    for campaign in data:
+        click.secho('CAMPAIGNS', bold=True, fg='green')
+        click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
 
 
 # Retrieve one campaign
-def retrieve_single_campaign(campaign_id):
+def retrieve_single_campaign(campaign_id: int):
     """ Get one campaign"""
-    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    click.echo({"result": [result.content]})
+    try:
+        data = API.campaigns.get(campaign_id=campaign_id)
+        if data:
+            click.secho('No Campaign with that ID Yet', blink=True, bold=True, fg='red')
+        for campaign in data:
+            click.secho('CAMPAIGN', bold=True, fg='green')
+            click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e), blink=True, bold=True, fg='red')
 
 
 # Create a new Campaign
-def create_email_campign():
-    """TODO: To be worked on."""
-    groups = [Group(name='Existing Group')]
-    page = Page(name='Existing Page')
-    template = Template(name='Existing Template')
-    smtp = SMTP(name='Existing Profile')
-    url = 'http://phishing_server'
+def create_email_campaign(camp_name: int, group_name: str, page_name: str, template_name: str,
+                          smtp_name: str, url: str):
+    groups = [Group(name=group_name)]
+    page = Page(name=page_name)
+    template = Template(name=template_name)
+    smtp = SMTP(name=smtp_name)
     campaign = Campaign(
-        name='Example Campaign', groups=groups, page=page,
+        name=camp_name, groups=groups, page=page,
         template=template, smtp=smtp, url=url)
 
-    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=campaign)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    try:
+        campaign = API.campaigns.post(campaign)
+        if campaign:
+            click.secho('Campaign ID: {}, Name: {} created successfully'.format(campaign.id, campaign.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def get_campaign_summary(campaign_id):
     """Get campaign summary."""
-    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}/summary?api_key={API_KEY}', verify=False)
-    click.echo(f'API Summary result!')
-    click.echo({"summary": result.content, "status code": result.status_code})
+    try:
+        summary = API.campaigns.summary(campaign_id=campaign_id)
+        if summary:
+            click.secho('Campaign Summary', bold=True, fg='green')
+            click.secho('Summary: {}'.format(summary), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
+
+
+def get_campaigns_summaries():
+    """Get campaigns summaries."""
+    try:
+        summaries = API.campaigns.summary()
+        if summaries:
+            click.secho('Campaign Summaries', bold=True, fg='green')
+            for summary in summaries:
+                click.secho('Summary: {}'.format(summary), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
 def delete_campaign(campaign_id: int):
     """Delete a campaign"""
-    result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete msg": result.content, "status code": result.status_code})
+    try:
+        API.campaigns.delete(campaign_id=campaign_id)
+        click.secho('Campaign With ID {} Deleted Successfully'.format(campaign_id), bold=True, fg='red')
+    except Exception as e:
+        click.secho('Campaign not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 def mark_campaign_complete(campaign_id: int):
-    # TODO: Check this one out
-    result = requests.post(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
-    click.echo({"Complete campaign": result.content, "status code": result.status_code})
+    """Mark campaign as Complete."""
+    try:
+        API.campaigns.complete(campaign_id=campaign_id)
+        click.secho('Campaign With ID {} Completed Successfully'.format(campaign_id), bold=True, fg='red')
+    except Exception as e:
+        click.secho('Campaign not marked as complete', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # GROUPS
 def get_groups():
     """Get groups"""
-    result = requests.get(f'{BASE_URL}/groups?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+    try:
+        groups = API.groups.get()
+        if groups:
+            click.secho('Groups', bold=True, fg='green')
+            for group in groups:
+                click.secho('Group Name: {} \nUser Targets: {}'.format(group.name, len(group.targets)), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def get_group_by_id(group_id:int):
+def get_group_by_id(group_id: int):
     """Get a group by Id"""
     result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+    data = json.dumps({'data': result.content.decode('utf-8')})
+    click.echo(f"Group Data: {data}, \nStatus Code: {result.status_code}")
 
 
-def create_group():
+@click.option('--email', prompt="Enter Target Email:", help="Email for the target")
+@click.option('--first_name', prompt="Enter Target First Name:", help="Target first name")
+@click.option('--last_name', prompt="Enter Target Last Name:", help="Target last name")
+@click.option('--position', prompt="Enter Target position:", help="Target position")
+def add_target(targets: list, email: str, first_name: str, last_name: str, position: str):
+    result = User(first_name=first_name, last_name=last_name, email=email, position=position)
+    targets.append(result)
+    click.secho('Target Added', fg='yellow')
+
+
+def create_group(email, first_name, last_name, position, name):
     """Create a group"""
-    name = input(f'Name of Group:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-    email = input(f'Email of Target:')
-    first_name = input(f'First Name:')
-    last_name = input(f'Last Name:')
-    position = input(f'Position:')
+    # TODO: Cater for extra information for extra targets.
 
     data = {
         "name": name,
-        "modified_date": modified_date,
+        "modified_date": datetime.now(),
         "target": [{
             "email": email,
             "first_name": first_name,
@@ -114,24 +163,21 @@ def create_group():
             "position": position
         }]
     }
-    post_result = requests.post(f'{BASE_URL}/groups/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    post_data = json.dumps(data, indent=4, sort_keys=True, default=str)
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    post_result = requests.post(url=f'{BASE_URL}/groups/?api_key={API_KEY}', json=post_data, verify=False,
+                                headers=headers)
+    res_data = json.dumps({'data': post_result.content.decode('utf-8')})
+    click.echo({"Response": res_data, "Status Code": post_result.status_code})
 
 
-def update_group():
+def update_group(group_id, name, email, first_name, last_name, position):
     """Update a group."""
     # Ask for the group ID
-    group_id = input(f'Enter Group ID:')
-    name = input(f'Name of Group:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-    email = input(f'Email of Target:')
-    first_name = input(f'First Name:')
-    last_name = input(f'Last Name:')
-    position = input(f'Position:')
 
     data = {
         "name": name,
-        "modified_date": modified_date,
+        "modified_date": json.dumps(datetime.now(), indent=4, sort_keys=True, default=str),
         "target": [{
             "email": email,
             "first_name": first_name,
@@ -143,7 +189,7 @@ def update_group():
     click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
-def delete_group(group_id:int):
+def delete_group(group_id: int):
     """Delete a group."""
     result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
     click.echo({"Groups": result.content, "status code": result.status_code})
@@ -170,7 +216,6 @@ def create_template():
     attachments = input(f'upload attachment:')
     modified_date = input(f'Enter Date:')  # use date.now()
 
-
     data = {
         "name": name,
         "subject": subject,
@@ -183,7 +228,6 @@ def create_template():
     click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
-
 def update_template():
     temp_id = input(f'Enter tempalate ID')
     name = input(f'Name of Group:')
@@ -192,7 +236,6 @@ def update_template():
     html = input(f'Html:')
     attachments = input(f'upload attachment:')
     modified_date = input(f'Enter Date:')  # use date.now()
-
 
     data = {
         "name": name,
@@ -290,9 +333,9 @@ def create_profile():
     password = input(f'Enter password (Optional):')
     host = input(f'Capture Password on Landing page (Asw: True/False):')
     interface_type = input(f'Enter Redirect URL:')
-    from_address= input(f'Enter Redirect URL:')
+    from_address = input(f'Enter Redirect URL:')
     ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers= input(f'Enter Redirect URL:')
+    headers = input(f'Enter Redirect URL:')
     modified_date = input(f'Enter Date:')  # use date.now()
 
     data = {
@@ -317,9 +360,9 @@ def update_profile():
     password = input(f'Enter password (Optional):')
     host = input(f'Capture Password on Landing page (Asw: True/False):')
     interface_type = input(f'Enter Redirect URL:')
-    from_address= input(f'Enter Redirect URL:')
+    from_address = input(f'Enter Redirect URL:')
     ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers= input(f'Enter Redirect URL:')
+    headers = input(f'Enter Redirect URL:')
     modified_date = input(f'Enter Date:')  # use date.now()
 
     data = {
