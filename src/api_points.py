@@ -125,9 +125,10 @@ def get_groups():
     try:
         groups = API.groups.get()
         if groups:
-            click.secho('Groups', bold=True, fg='green')
+            click.secho('Groups', bold=True, fg='green', underline=True)
             for group in groups:
                 click.secho('Group Name: {} \nUser Targets: {}'.format(group.name, len(group.targets)), fg='blue')
+                click.secho('{}'.format('*' * 20))
     except Exception as e:
         click.secho('Error: {}'.format(e))
 
@@ -197,8 +198,16 @@ def delete_group(group_id: int):
 
 # TEMPLATES
 def get_all_templates():
-    result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    click.echo({"Landing Pages": result.content, "status code": result.status_code})
+    try:
+        templates = API.templates.get()
+        if templates:
+            click.secho('Groups', bold=True, fg='green', underline=True)
+            for template in templates:
+                click.secho('Template Name: {} \nTemplate ID: {}'.format(template.name, len(template.id)), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
+
 
 
 def get_template_by_id():
@@ -257,12 +266,19 @@ def delete_template(template_id: int):
         click.secho('Template not deleted', bold=True, fg='yellow')
         click.secho('Error: {}'.format(e), bold=True, fg='red')
 
+
 # LANDING PAGES
 def get_landing_pages():
     """Get all the landing pages"""
-    result = requests.get(f'{BASE_URL}/pages?api_key={API_KEY}', verify=False)
-    click.echo({"Landing Pages": result.content, "status code": result.status_code})
-
+    try:
+        pages = API.pages.get()
+        if pages:
+            click.secho('Pages', bold=True, fg='green', underline=True)
+            for page in pages:
+                click.secho('Page Name: {} \nPage ID: {}'.format(template.name, len(template.id)), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 def get_landing_page(lp_id: int):
     """Get landing page by ID"""
@@ -310,11 +326,13 @@ def modify_landing_page():
     click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
-def delete_landing_page():
-    lp_id = input(f'Enter template ID')
-    result = requests.delete(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete": result.content, "status code": result.status_code})
-
+def delete_landing_page(page_id: int):
+    try:
+        API.pages.delete(page_id=page_id)
+        click.secho('Page With ID {} Deleted Successfully'.format(page_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Page not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 # SENDING PROFILE
 
@@ -382,7 +400,10 @@ def update_profile():
     click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
 
-def delete_profile():
-    prof_id = input(f'Enter profile ID: ')
-    result = requests.delete(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete Profile": result.content, "status code": result.status_code})
+def delete_profile(smtp_id: int):
+    try:
+        API.smtp.delete(smtp_id=smtp_id)
+        click.secho('Profile With ID {} Deleted Successfully'.format(smtp_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Profile not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')

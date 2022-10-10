@@ -171,10 +171,11 @@ def updateGroup(group_id, name, email, first_name, last_name, position):
 
 
 @click.command()
-def deleteGroup():
+@click.option('--group_id', prompt="Enter Group ID:", help="Pass Group ID to Delete")
+def deleteGroup(group_id):
     """Delete a group."""
     from api_points import delete_group
-    delete_group()
+    delete_group(int(group_id))
 
 
 # TEMPLATES
@@ -208,10 +209,11 @@ def updateTemplate():
 
 
 @click.command()
-def deleteTemplate():
+@click.option('--template_id', prompt="Enter Template ID:", help="Pass Template ID to Delete")
+def deleteTemplate(template_id):
     """Delete a template"""
     from api_points import delete_template
-    delete_template()
+    delete_template(int(template_id))
 
 
 @click.command()
@@ -243,10 +245,11 @@ def updateLandingPage():
 
 
 @click.command()
-def deleteLandingPage():
+@click.option('--page_id', prompt="Enter Page ID:", help="Pass Page ID to Delete")
+def deleteLandingPage(page_id):
     """Delete a landing page."""
     from api_points import delete_landing_page
-    delete_landing_page()
+    delete_landing_page(int(page_id))
 
 
 # SENDING PROFILE 
@@ -280,10 +283,11 @@ def updateProfile():
 
 
 @click.command()
-def deleteProfile():
+@click.option('--smtp_id', prompt="Enter SMTP ID:", help="Profile ID to Delete")
+def deleteProfile(smtp_id):
     """Delete a profile"""
     from api_points import delete_profile
-    delete_profile()
+    delete_profile(int(smtp_id))
 
 
 main.add_command(web)
