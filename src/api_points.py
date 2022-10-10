@@ -209,53 +209,51 @@ def get_all_templates():
         click.secho('Error: {}'.format(e))
 
 
-
-def get_template_by_id():
-    temp_id = input(f'Enter template ID')
-    result = requests.get(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
-
-
-def create_template():
-    # Template attributes:  id, name, subject, text, html, modified_date, attachments
-    name = input(f'Name of Group:')
-    subject = input(f'Subject:')
-    text = input(f'Text:')
-    html = input(f'Html:')
-    attachments = input(f'upload attachment:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-    data = {
-        "name": name,
-        "subject": subject,
-        "text": text,
-        "html": html,
-        "modified_date": modified_date,
-        "attachments": attachments
-    }
-    post_result = requests.post(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def get_template_by_id(template_id: int):
+    try:
+        template = API.templates.get(template_id=template_id)
+        if template:
+            click.secho('Group', bold=True, fg='green')
+            click.secho('Group Name: {}\n'.format(template.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def update_template():
-    temp_id = input(f'Enter tempalate ID')
-    name = input(f'Name of Group:')
-    subject = input(f'Subject:')
-    text = input(f'Text:')
-    html = input(f'Html:')
-    attachments = input(f'upload attachment:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def create_template(name: str, html: str, text: str, time: datetime):
+    template = Template(
+        name=name,
+        html=html,
+        text=text,
+        time=time
+    )
+    try:
+        template = API.templates.post(template)
+        if True:
+            click.secho('Template Name: {} Created Successfully!'.format(template.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
-    data = {
-        "name": name,
-        "subject": subject,
-        "text": text,
-        "html": html,
-        "modified_date": modified_date,
-        "attachments": attachments
-    }
-    post_result = requests.put(f'{BASE_URL}/templates/{temp_id}?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+
+def update_template(template_id, name:str, html: str, text: str, time: datetime):
+
+    try:
+        # Check existence
+        API.templates.get(template_id=template_id)
+        if True:
+            template = Template(
+                name=name,
+                html=html,
+                text=text,
+                time=time
+            )
+            try:
+                template = API.templates.put(template)
+                if True:
+                    click.secho('Template Name: {} Created Successfully!'.format(template.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def delete_template(template_id: int):
@@ -275,55 +273,60 @@ def get_landing_pages():
         if pages:
             click.secho('Pages', bold=True, fg='green', underline=True)
             for page in pages:
-                click.secho('Page Name: {} \nPage ID: {}'.format(template.name, len(template.id)), fg='blue')
+                click.secho('Landing Page Name: {} \nPage ID: {}'.format(page.name, page.id), fg='blue')
                 click.secho('{}'.format('*' * 20))
     except Exception as e:
         click.secho('Error: {}'.format(e))
 
+
 def get_landing_page(lp_id: int):
     """Get landing page by ID"""
-    result = requests.get(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"One Landing Page": result.content, "status code": result.status_code})
+    try:
+        page = API.pages.get(page_id=lp_id)
+        if page:
+            click.secho('landing Page', bold=True, fg='green')
+            click.secho('Group Name: {}\n'.format(page.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_landing_page():
-    name = input(f'Name of Landing Page:')
-    html = input(f'HTML of Landing Page:')
-    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
-    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
-    redirect_url = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def create_landing_page(name, html, redirect_url, capture_credentials, capture_passwords):
 
-    data = {
-        "name": name,
-        "html": html,
-        "capture_credentials": capture_credentials,
-        "capture_passwords": capture_password,
-        "redirect_url": redirect_url,
-        "modified_date": modified_date
-    }
-    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    page = Page(
+        name=name,
+        html=html,
+        capture_credentials=capture_credentials,
+        capture_passwords=capture_passwords,
+        redirect_url=redirect_url,
+    )
+    try:
+        page = API.pages.post(page)
+        if True:
+            click.secho('Template Name: {} Created Successfully!'.format(page.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def modify_landing_page():
-    name = input(f'Name of Landing Page:')
-    html = input(f'HTML of Landing Page:')
-    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
-    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
-    redirect_url = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-    data = {
-        "name": name,
-        "html": html,
-        "capture_credentials": capture_credentials,
-        "capture_passwords": capture_password,
-        "redirect_url": redirect_url,
-        "modified_date": modified_date
-    }
-    post_result = requests.put(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def modify_landing_page(page_id, name, html, redirect_url, capture_credentials, capture_passwords):
+    try:
+        # Check existence
+        API.pages.get(page_id=page_id)
+        if True:
+            page = Page(
+                name=name,
+                html=html,
+                capture_credentials=capture_credentials,
+                capture_passwords=capture_passwords,
+                redirect_url=redirect_url,
+            )
+            try:
+                update_page = API.pages.put(page)
+                if True:
+                    click.secho('Template Name: {} Created Successfully!'.format(update_page.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def delete_landing_page(page_id: int):
@@ -334,70 +337,70 @@ def delete_landing_page(page_id: int):
         click.secho('Page not deleted', bold=True, fg='yellow')
         click.secho('Error: {}'.format(e), bold=True, fg='red')
 
+
 # SENDING PROFILE
 
 def get_sending_profile():
-    result = requests.get(f'{BASE_URL}/smtp?api_key={API_KEY}', verify=False)
-    click.echo({"Profile": result.content, "status code": result.status_code})
+    try:
+        profiles = API.smtp.get()
+        if profiles:
+            click.secho('Profiles', bold=True, fg='green', underline=True)
+            for smtp in profiles:
+                click.secho('Profile Name: {} \nProfile ID: {}'.format(smtp.name, smtp.id), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def get_profile_by_id():
-    prof_id = input(f'Enter profile ID: ')
-    result = requests.get(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Profile": result.content, "status code": result.status_code})
+def get_profile_by_id(smtp_id: int):
+    try:
+        profile = API.smtp.get(smtp_id=smtp_id)
+        if profile:
+            click.secho('Profile', bold=True, fg='green')
+            click.secho('Profile Name: {}\n'.format(profile.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_profile():
-    name = input(f'Name of profile:')
-    username = input(f'Enter Username(Optional):')
-    password = input(f'Enter password (Optional):')
-    host = input(f'Capture Password on Landing page (Asw: True/False):')
-    interface_type = input(f'Enter Redirect URL:')
-    from_address = input(f'Enter Redirect URL:')
-    ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def create_profile(name: str, interface: str, host: str, from_address: str, ignore_cert_errors: bool):
+    cert = False
+    if ignore_cert_errors == "True":
+        cert = True
 
-    data = {
-        "name": name,
-        "username": username,
-        "password": password,
-        "host": host,
-        "interface_type": interface_type,
-        "from_address": from_address,
-        "ingore_cert_errors": ingnore_cert_errors,
-        "headers": headers,
-        "modified_date": modified_date
-    }
-    post_result = requests.post(f'{BASE_URL}/smtp/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    profile = SMTP(name=name)
+    # profile.interface_type = interface
+    profile.host = host
+    profile.from_address = from_address
+    profile.ignore_cert_errors = ignore_cert_errors
+    prof = API.smtp.post(profile)
+    try:
+        # prof = API.smtp.post(profile)
+        if prof:
+            click.secho('Profile Created Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def update_profile():
-    prof_id = input(f'Enter profile ID')
-    name = input(f'Name of profile:')
-    username = input(f'Enter Username(Optional):')
-    password = input(f'Enter password (Optional):')
-    host = input(f'Capture Password on Landing page (Asw: True/False):')
-    interface_type = input(f'Enter Redirect URL:')
-    from_address = input(f'Enter Redirect URL:')
-    ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-    data = {
-        "name": name,
-        "username": username,
-        "password": password,
-        "host": host,
-        "interface_type": interface_type,
-        "from_address": from_address,
-        "ingore_cert_errors": ingnore_cert_errors,
-        "headers": headers,
-        "modified_date": modified_date
-    }
-    post_result = requests.put(f'{BASE_URL}/smtp/{prof_id}/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def update_profile(profile_id, name, from_address, interface_type, host, ignore_cert_errors):
+    try:
+        # Check existence
+        API.smtp.get(smtp_id=profile_id)
+        if True:
+            prof = SMTP(
+                name=name,
+                from_address=from_address,
+                interface_type=interface_type,
+                host=host,
+                ignore_cert_errors=ignore_cert_errors,
+            )
+            try:
+                update_profile = API.smtp.put(prof)
+                if True:
+                    click.secho('Profile Name: {} Updated Successfully!'.format(update_profile.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def delete_profile(smtp_id: int):

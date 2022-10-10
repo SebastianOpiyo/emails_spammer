@@ -188,24 +188,34 @@ def getAllTemplates():
 
 
 @click.command()
-def getTemplateById():
+@click.option('--template_id', prompt="Enter Template ID:", help="Pass Template ID to Fetch")
+def getTemplateById(template_id):
     """Get template by ID"""
     from api_points import get_template_by_id
-    get_template_by_id()
+    get_template_by_id(int(template_id))
 
 
 @click.command()
-def createTemplate():
+@click.option('--name', prompt="Enter template Name:", help="New Group name")
+@click.option('--html', prompt="Enter HTML string:", help="HTML code for the page(Optional)")
+@click.option('--text', prompt="Enter Text if NO HTML:", help="Send as Email Text")
+@click.option('--time', prompt="Enter Time :", help="Time for template launch")
+def createTemplate(name, html, text, time):
     """Create a template"""
     from api_points import create_template
-    create_template()
+    create_template(name, html, text, time)
 
 
 @click.command()
-def updateTemplate():
+@click.option('--template_id', prompt="Enter template ID:", help="ID for template to update")
+@click.option('--name', prompt="Enter template Name:", help="New Group name")
+@click.option('--html', prompt="Enter HTML string:", help="HTML code for the page(Optional)")
+@click.option('--text', prompt="Enter Text if NO HTML:", help="Send as Email Text")
+@click.option('--time', prompt="Enter Time :", help="Time for template launch")
+def updateTemplate(template_id, name, html, text, time):
     """Update a template"""
     from api_points import update_template
-    update_template()
+    update_template(template_id, name, html, text, time)
 
 
 @click.command()
@@ -224,24 +234,40 @@ def getLandingPages():
 
 
 @click.command()
-def getLandingPageById():
+@click.option('--page_id', prompt="Enter Landing Page ID:", help="Landing Page ID to Delete")
+def getLandingPageById(page_id):
     """Get a landing page by its ID"""
     from api_points import get_landing_page
-    get_landing_page()
+    get_landing_page(int(page_id))
 
 
 @click.command()
-def createLandingPage():
+@click.option('--name', prompt="Enter Landing Page Name:", help="New landing page name")
+@click.option('--html', prompt="Enter Page HTML:", help="HTML code for the page(Optional)")
+@click.option('--redirect_url', prompt="Enter Redirect URL:", help="URL to direct targets to after they submit data")
+@click.option('--capture_credentials', prompt="True/False[Default: False]:",
+              help="Whether or not landing page should capture credentials")
+@click.option('--capture_passwords', prompt="True/False[Default: False]:",
+              help="Whether or not landing page should capture passwords")
+def createLandingPage(name, html, redirect_url, capture_credentials, capture_passwords):
     """Create a landing page"""
     from api_points import create_landing_page
-    create_landing_page()
+    create_landing_page(name, html, redirect_url, capture_credentials, capture_passwords)
 
 
 @click.command()
-def updateLandingPage():
+@click.option('--page_id', prompt="Enter Landing Page ID:", help="ID for the page to be modified")
+@click.option('--name', prompt="Enter Landing Page Name:", help="New landing page name")
+@click.option('--html', prompt="Enter Page HTML:", help="HTML code for the page(Optional)")
+@click.option('--redirect_url', prompt="Enter Redirect URL:", help="URL to direct targets to after they submit data")
+@click.option('--capture_credentials', prompt="True/False[Default: False]:",
+              help="Whether or not landing page should capture credentials")
+@click.option('--capture_passwords', prompt="True/False[Default: False]:",
+              help="Whether or not landing page should capture passwords")
+def updateLandingPage(page_id, name, html, redirect_url, capture_credentials, capture_passwords):
     """Update a landing page"""
     from api_points import modify_landing_page
-    modify_landing_page()
+    modify_landing_page(page_id, name, html, redirect_url, capture_credentials, capture_passwords)
 
 
 @click.command()
@@ -262,24 +288,40 @@ def getSendingProfile():
 
 
 @click.command()
-def getProfileById():
+@click.option('--smtp_id', prompt="Enter Profile ID:", help="Pass Profile ID to Delete")
+def getProfileById(smtp_id):
     """Get a profile by ID"""
     from api_points import get_profile_by_id
-    get_profile_by_id()
+    get_profile_by_id(int(smtp_id))
 
 
 @click.command()
-def createProfile():
+@click.option('--name', prompt="Enter profile Name:", help="New Profile name")
+@click.option('--interface_type', prompt="Enter Interface Type:",
+              help="The Type of SMTP Connection(Unless otherwise, always use SMTP)")
+@click.option('--from_address', prompt="Enter Email Address:", help="Address to send Emails from.")
+@click.option('--host', prompt="Enter host:port of SMTP Server:", help="The host:port of SMTP Server")
+@click.option('--ignore_cert_errors', prompt="Ignore SSL Cert: [True/False]",
+              help="Ignore SSL Certificate validation Errors")
+def createProfile(name, from_address, interface_type, host, ignore_cert_errors):
     """Create a profile"""
     from api_points import create_profile
-    create_profile()
+    create_profile(name, from_address, interface_type, host, ignore_cert_errors)
 
 
 @click.command()
-def updateProfile():
+@click.option('--profile_id', prompt="Enter profile ID:", help="ID of profile to update")
+@click.option('--name', prompt="Enter profile Name:", help="New Profile name")
+@click.option('--interface_type', prompt="Enter Interface Type:",
+              help="The Type of SMTP Connection(Unless otherwise, always use SMTP)")
+@click.option('--from_address', prompt="Enter Email Address Address:", help="Address to send Emails from.")
+@click.option('--host', prompt="Enter HOST port of SMTP Server:", help="The host:port of SMTP Server")
+@click.option('--ignore_cert_errors', prompt="Ignore SSL Cert: [True/False]",
+              help="Ignore SSL Certificate validation Errors")
+def updateProfile(profile_id, name, from_address, interface_type, host, ignore_cert_errors):
     """Update a profile"""
     from api_points import update_profile
-    update_profile()
+    update_profile(profile_id, name, from_address, interface_type, host, ignore_cert_errors)
 
 
 @click.command()
