@@ -368,10 +368,10 @@ def create_profile(name: str, interface: str, host: str, from_address: str, igno
         cert = True
 
     profile = SMTP(name=name)
-    # profile.interface_type = interface
+    profile.interface_type = interface
     profile.host = host
     profile.from_address = from_address
-    profile.ignore_cert_errors = ignore_cert_errors
+    profile.ignore_cert_errors = cert
     prof = API.smtp.post(profile)
     try:
         # prof = API.smtp.post(profile)
