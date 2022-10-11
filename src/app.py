@@ -245,12 +245,18 @@ def getLandingPageById(page_id):
 @click.option('--name', prompt="Enter Landing Page Name:", help="New landing page name")
 @click.option('--html', prompt="Enter Page HTML:", help="HTML code for the page(Optional)")
 @click.option('--redirect_url', prompt="Enter Redirect URL:", help="URL to direct targets to after they submit data")
-@click.option('--capture_credentials', prompt="True/False[Default: False]:",
+@click.option('--capture_credentials', prompt="Capture Credentials: True/False[Default: False]:",
               help="Whether or not landing page should capture credentials")
-@click.option('--capture_passwords', prompt="True/False[Default: False]:",
+@click.option('--capture_passwords', prompt="Capture Passwords True/False[Default: False]:",
               help="Whether or not landing page should capture passwords")
 def createLandingPage(name, html, redirect_url, capture_credentials, capture_passwords):
     """Create a landing page"""
+    capture_passwords, capture_credentials = False, False
+    if capture_passwords == "True":
+        capture_passwords = True
+    if capture_credentials == "True":
+        capture_credentials = True
+
     from api_points import create_landing_page
     create_landing_page(name, html, redirect_url, capture_credentials, capture_passwords)
 
@@ -306,7 +312,7 @@ def getProfileById(smtp_id):
 def createProfile(name, from_address, interface_type, host, ignore_cert_errors):
     """Create a profile"""
     from api_points import create_profile
-    create_profile(name, from_address, interface_type, host, ignore_cert_errors)
+    create_profile(name, interface_type, host, from_address, ignore_cert_errors)
 
 
 @click.command()

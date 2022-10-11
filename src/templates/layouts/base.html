@@ -1,16 +1,13 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Spammer</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
 <nav>
   <h1>Email Spammer App</h1>
   <ul>
-    {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('dashboard') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('dashboard') }}">Register</a>
-      <li><a href="{{ url_for('dashboard') }}">Log In</a>
-    {% endif %}
+
   </ul>
 </nav>
 <section class="content">

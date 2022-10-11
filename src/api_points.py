@@ -81,8 +81,10 @@ def get_campaign_summary(campaign_id):
     try:
         summary = API.campaigns.summary(campaign_id=campaign_id)
         if summary:
+            collection = summary.stats.as_dict()
+            click.echo(collection)
             click.secho('Campaign Summary', bold=True, fg='green', underline=True)
-            click.secho('Summary: {}'.format(summary), fg='blue')
+            click.secho('Summary: {}'.format(collection["name"]), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e))
 
@@ -92,9 +94,11 @@ def get_campaigns_summaries():
     try:
         summaries = API.campaigns.summary()
         if summaries:
+            collection = summaries.stats.as_dict()
+            click.echo(collection)
             click.secho('Campaign Summaries', bold=True, fg='green', underline=True)
-            for summary in summaries:
-                click.secho('Summary: {}'.format(summary), fg='blue')
+            for k, v in collection:
+                click.secho('Summary: {} {}'.format(k, v), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e))
 
@@ -203,7 +207,7 @@ def get_all_templates():
         if templates:
             click.secho('Groups', bold=True, fg='green', underline=True)
             for template in templates:
-                click.secho('Template Name: {} \nTemplate ID: {}'.format(template.name, len(template.id)), fg='blue')
+                click.secho('Template Name: {} \nTemplate ID: {}'.format(template.name, template.id), fg='blue')
                 click.secho('{}'.format('*' * 20))
     except Exception as e:
         click.secho('Error: {}'.format(e))
@@ -234,7 +238,7 @@ def create_template(name: str, html: str, text: str, time: datetime):
         click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def update_template(template_id, name:str, html: str, text: str, time: datetime):
+def update_template(template_id, name: str, html: str, text: str, time: datetime):
 
     try:
         # Check existence
@@ -290,7 +294,7 @@ def get_landing_page(lp_id: int):
         click.secho('Error: {}'.format(e))
 
 
-def create_landing_page(name, html, redirect_url, capture_credentials, capture_passwords):
+def create_landing_page(name: str, html: str, redirect_url: str, capture_credentials: bool, capture_passwords: bool):
 
     page = Page(
         name=name,
@@ -366,7 +370,8 @@ def create_profile(name: str, interface: str, host: str, from_address: str, igno
     cert = False
     if ignore_cert_errors == "True":
         cert = True
-
+    # from_address = "John Doe <ifo@shobarafoods.biz>"
+    print(name, interface, host, from_address, cert)
     profile = SMTP(name=name)
     profile.interface_type = interface
     profile.host = host
