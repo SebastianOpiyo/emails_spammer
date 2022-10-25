@@ -1,14 +1,7 @@
-from flask import Flask, render_template
-from jinja2 import TemplateNotFound
-
-
+from flask import Flask
 app = Flask(__name__)
 
+from views import *
 
-@app.route("/")
-def dashboard():
-    return render_template('dashboard.html')
-
-
-if __name__ == '__main__':
-    app.run()
+if __name__ == "__main__":
+    app.run(debug="true")

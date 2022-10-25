@@ -35,14 +35,12 @@ def reset_api_key():
 # CAMPAIGNS
 # Retrieve all campaigns
 def retrieve_all_campaign():
-    """Get a list of all the campaigns"""
     result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
     click.echo({"result": [result.content], "Status Code": {result.status_code}})
 
 
 # Retrieve one campaign
 def retrieve_single_campaign(campaign_id):
-    """ Get one campaign"""
     result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
     click.echo({"result": [result.content]})
 
@@ -64,14 +62,12 @@ def create_email_campign():
 
 
 def get_campaign_summary(campaign_id):
-    """Get campaign summary."""
     result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}/summary?api_key={API_KEY}', verify=False)
     click.echo(f'API Summary result!')
     click.echo({"summary": result.content, "status code": result.status_code})
 
 
 def delete_campaign(campaign_id: int):
-    """Delete a campaign"""
     result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
     click.echo({"Delete msg": result.content, "status code": result.status_code})
 
@@ -84,19 +80,16 @@ def mark_campaign_complete(campaign_id: int):
 
 # GROUPS
 def get_groups():
-    """Get groups"""
     result = requests.get(f'{BASE_URL}/groups?api_key={API_KEY}', verify=False)
     click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 def get_group_by_id(group_id:int):
-    """Get a group by Id"""
     result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
     click.echo({"Groups": result.content, "status code": result.status_code})
 
 
 def create_group():
-    """Create a group"""
     name = input(f'Name of Group:')
     modified_date = input(f'Enter Date:')  # use date.now()
     email = input(f'Email of Target:')
@@ -119,7 +112,6 @@ def create_group():
 
 
 def update_group():
-    """Update a group."""
     # Ask for the group ID
     group_id = input(f'Enter Group ID:')
     name = input(f'Name of Group:')
@@ -144,7 +136,6 @@ def update_group():
 
 
 def delete_group(group_id:int):
-    """Delete a group."""
     result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
     click.echo({"Groups": result.content, "status code": result.status_code})
 
