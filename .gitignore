@@ -9,6 +9,10 @@ venv/
 /venv
 env.bak/
 venv.bak/
+<<<<<<< HEAD
 __pycache__/
 *.py[cod]
 *$py.class
+=======
+*.db
+>>>>>>> 1d520cc4799338897cc6ab038696bc1ff6a564d2

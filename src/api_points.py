@@ -1,334 +1,417 @@
-import logging
-from gophish import Gophish, models, api
-from gophish.models import *
-from jinja2 import TemplateNotFound
 import json
 import requests
 import click
 import urllib3
+from datetime import datetime
+from gophish import Gophish, models, api
+from gophish.models import *
 
 urllib3.disable_warnings()
 
 API_KEY = '3e35419d03ca86bd6dfa5e89f0e27a08d2832a7e452686c9068216a112e224a2'
 BASE_URL = 'https://127.0.0.1:3333/api/'
-API = Gophish(API_KEY, host=f'{BASE_URL}', verify=False)
+API = Gophish(API_KEY, verify=False)
 
 
 # TEST API
 def test_api():
     """Testing the API end point to ensure all is working fine."""
     result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    logging.captureWarnings(True)
+    data = json.loads(result.content)
     click.echo('Test Result \n')
-    # for k,v in result.content:
-    #     click.echo(f"{k}: {v}")
-    click.echo({"result": [result.content]})
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"Test Response: {data}, \nStatus Code: {result.status_code}")
 
 
 # RESET API KEY
 def reset_api_key():
     """TODO: To be worked on."""
-    result = requests.post(f'{BASE_URL}/reset_api/?api_key={API_KEY}', verify=False)
-    click.echo(f'New API Key: {result.content}')
+    result = requests.post(f'{BASE_URL}/reset/?api_key={API_KEY}', verify=False)
+    data = json.dumps({'result': result.content.decode('utf-8')})
+    click.echo(f"NEW API KEY: {data}, \nStatus Code: {result.status_code}")
 
 
 # CAMPAIGNS
 # Retrieve all campaigns
 def retrieve_all_campaign():
-    result = requests.get(f'{BASE_URL}/campaigns/?api_key={API_KEY}', verify=False)
-    click.echo({"result": [result.content], "Status Code": {result.status_code}})
+    """Get a list of all the campaigns"""
+    data = API.campaigns.get()
+    if not data:
+        click.secho('No Campaigns Created Yet', blink=True, bold=True, fg='red')
+    for campaign in data:
+        click.secho('CAMPAIGNS', bold=True, fg='green', underline=True)
+        click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
 
 
 # Retrieve one campaign
-def retrieve_single_campaign(campaign_id):
-    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    click.echo({"result": [result.content]})
+def retrieve_single_campaign(campaign_id: int):
+    """ Get one campaign"""
+    try:
+        data = API.campaigns.get(campaign_id=campaign_id)
+        if data:
+            click.secho('No Campaign with that ID Yet', blink=True, bold=True, fg='red')
+        for campaign in data:
+            click.secho('CAMPAIGN', bold=True, fg='green', underline=True)
+            click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e), blink=True, bold=True, fg='red')
 
 
 # Create a new Campaign
-def create_email_campign():
-    """TODO: To be worked on."""
-    groups = [Group(name='Existing Group')]
-    page = Page(name='Existing Page')
-    template = Template(name='Existing Template')
-    smtp = SMTP(name='Existing Profile')
-    url = 'http://phishing_server'
+def create_email_campaign(camp_name: int, group_name: str, page_name: str, template_name: str,
+                          smtp_name: str, url: str):
+    groups = [Group(name=group_name)]
+    page = Page(name=page_name)
+    template = Template(name=template_name)
+    smtp = SMTP(name=smtp_name)
     campaign = Campaign(
-        name='Example Campaign', groups=groups, page=page,
+        name=camp_name, groups=groups, page=page,
         template=template, smtp=smtp, url=url)
 
-    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=campaign)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    try:
+        campaign = API.campaigns.post(campaign)
+        if campaign:
+            click.secho('Campaign ID: {}, Name: {} created successfully'.format(campaign.id, campaign.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def get_campaign_summary(campaign_id):
-    result = requests.get(f'{BASE_URL}/campaigns/:{campaign_id}/summary?api_key={API_KEY}', verify=False)
-    click.echo(f'API Summary result!')
-    click.echo({"summary": result.content, "status code": result.status_code})
+    """Get campaign summary."""
+    try:
+        summary = API.campaigns.summary(campaign_id=campaign_id)
+        if summary:
+            collection = summary.stats.as_dict()
+            click.echo(collection)
+            click.secho('Campaign Summary', bold=True, fg='green', underline=True)
+            click.secho('Summary: {}'.format(collection["name"]), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
+
+
+def get_campaigns_summaries():
+    """Get campaigns summaries."""
+    try:
+        summaries = API.campaigns.summary()
+        if summaries:
+            collection = summaries.stats.as_dict()
+            click.echo(collection)
+            click.secho('Campaign Summaries', bold=True, fg='green', underline=True)
+            for k, v in collection:
+                click.secho('Summary: {} {}'.format(k, v), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
 def delete_campaign(campaign_id: int):
-    result = requests.delete(f'{BASE_URL}/campaigns/:{campaign_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete msg": result.content, "status code": result.status_code})
+    """Delete a campaign"""
+    try:
+        API.campaigns.delete(campaign_id=campaign_id)
+        click.secho('Campaign With ID {} Deleted Successfully'.format(campaign_id), bold=True, fg='red')
+    except Exception as e:
+        click.secho('Campaign not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 def mark_campaign_complete(campaign_id: int):
-    # TODO: Check this one out
-    result = requests.post(f'{BASE_URL}/campaigns/:{campaign_id}/complete?api_key={API_KEY}', verify=False)
-    click.echo({"Complete campaign": result.content, "status code": result.status_code})
+    """Mark campaign as Complete."""
+    try:
+        API.campaigns.complete(campaign_id=campaign_id)
+        click.secho('Campaign With ID {} Completed Successfully'.format(campaign_id), bold=True, fg='red')
+    except Exception as e:
+        click.secho('Campaign not marked as complete', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # GROUPS
 def get_groups():
-    result = requests.get(f'{BASE_URL}/groups?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+    """Get groups"""
+    try:
+        groups = API.groups.get()
+        if groups:
+            click.secho('Groups', bold=True, fg='green', underline=True)
+            for group in groups:
+                click.secho('Group Name: {} \nUser Targets: {}'.format(group.name, len(group.targets)), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def get_group_by_id(group_id:int):
-    result = requests.get(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+def get_group_by_id(group_id: int):
+    """Get a group by Id"""
+    try:
+        group = API.groups.get(group_id=group_id)
+        if group:
+            click.secho('Group', bold=True, fg='green')
+            click.secho('Group Name: {} \nUser Targets: {}'.format(group.name, len(group.targets)), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_group():
-    name = input(f'Name of Group:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-    email = input(f'Email of Target:')
-    first_name = input(f'First Name:')
-    last_name = input(f'Last Name:')
-    position = input(f'Position:')
-
-    data = {
-        "name": name,
-        "modified_date": modified_date,
-        "target": [{
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "position": position
-        }]
-    }
-    post_result = requests.post(f'{BASE_URL}/groups/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def add_target(targets: list, email: str, first_name: str, last_name: str, position: str):
+    result = User(first_name=first_name, last_name=last_name, email=email, position=position)
+    targets.append(result)
+    click.secho('Target Added', fg='yellow')
+    click.secho(f"Do you want to add more target? [y/n]", nl=False, bold=True, fg='bright_blue')
+    char = click.getchar()
+    click.echo()
+    if char == 'y':
+        click.secho(f"\nAdd Target:", fg='green')
+        add_target(targets, email, first_name, last_name, position)
+        click.secho(f"Target Update: {targets}")
+    elif char == 'n':
+        click.secho(f"Target Before Abort: {targets}\n")
+        click.secho(f"Abort!:", fg='red')
+    else:
+        click.secho(f"Invalid input :(", fg='red')
 
 
-def update_group():
-    # Ask for the group ID
-    group_id = input(f'Enter Group ID:')
-    name = input(f'Name of Group:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-    email = input(f'Email of Target:')
-    first_name = input(f'First Name:')
-    last_name = input(f'Last Name:')
-    position = input(f'Position:')
+def create_group(name: str, target: list):
+    """Create a group"""
+    group = Group(name=name, targets=target)
 
-    data = {
-        "name": name,
-        "modified_date": modified_date,
-        "target": [{
-            "email": email,
-            "first_name": first_name,
-            "last_name": last_name,
-            "position": position
-        }]
-    }
-    post_result = requests.post(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    try:
+        API.groups.post(group)
+        if True:
+            click.secho('Group Created Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def delete_group(group_id:int):
-    result = requests.delete(f'{BASE_URL}/groups/:{group_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+def update_group(group_id, name, target):
+    """Update a group."""
+    try:
+        group = API.groups.get(group_id=group_id)
+        edit_group = Group(name=name, target=target)
+        if group:
+            API.groups.put(edit_group)
+            click.secho('Group Updated Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
+
+
+def delete_group(group_id: int):
+    """Delete a group."""
+    try:
+        API.groups.delete(group_id=group_id)
+        click.secho('Group With ID {} Deleted Successfully'.format(group_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Group not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # TEMPLATES
 def get_all_templates():
-    result = requests.get(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False)
-    click.echo({"Landing Pages": result.content, "status code": result.status_code})
+    try:
+        templates = API.templates.get()
+        if templates:
+            click.secho('Groups', bold=True, fg='green', underline=True)
+            for template in templates:
+                click.secho('Template Name: {} \nTemplate ID: {}'.format(template.name, template.id), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def get_template_by_id():
-    temp_id = input(f'Enter template ID')
-    result = requests.get(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+def get_template_by_id(template_id: int):
+    try:
+        template = API.templates.get(template_id=template_id)
+        if template:
+            click.secho('Group', bold=True, fg='green')
+            click.secho('Group Name: {}\n'.format(template.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_template():
-    # Template attributes:  id, name, subject, text, html, modified_date, attachments
-    name = input(f'Name of Group:')
-    subject = input(f'Subject:')
-    text = input(f'Text:')
-    html = input(f'Html:')
-    attachments = input(f'upload attachment:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def create_template(name: str, html: str, text: str, time: datetime):
+    template = Template(
+        name=name,
+        html=html,
+        text=text,
+        time=time
+    )
+    try:
+        template = API.templates.post(template)
+        if True:
+            click.secho('Template Name: {} Created Successfully!'.format(template.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-    data = {
-        "name": name,
-        "subject": subject,
-        "text": text,
-        "html": html,
-        "modified_date": modified_date,
-        "attachments": attachments
-    }
-    post_result = requests.post(f'{BASE_URL}/templates/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def update_template(template_id, name: str, html: str, text: str, time: datetime):
+
+    try:
+        # Check existence
+        API.templates.get(template_id=template_id)
+        if True:
+            template = Template(
+                name=name,
+                html=html,
+                text=text,
+                time=time
+            )
+            try:
+                template = API.templates.put(template)
+                if True:
+                    click.secho('Template Name: {} Created Successfully!'.format(template.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-
-def update_template():
-    temp_id = input(f'Enter tempalate ID')
-    name = input(f'Name of Group:')
-    subject = input(f'Subject:')
-    text = input(f'Text:')
-    html = input(f'Html:')
-    attachments = input(f'upload attachment:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-
-    data = {
-        "name": name,
-        "subject": subject,
-        "text": text,
-        "html": html,
-        "modified_date": modified_date,
-        "attachments": attachments
-    }
-    post_result = requests.put(f'{BASE_URL}/templates/{temp_id}?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
-
-
-def delete_template():
-    temp_id = input(f'Enter template ID')
-    result = requests.delete(f'{BASE_URL}/templates/:{temp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Groups": result.content, "status code": result.status_code})
+def delete_template(template_id: int):
+    try:
+        API.templates.delete(template_id=template_id)
+        click.secho('Template With ID {} Deleted Successfully'.format(template_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Template not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # LANDING PAGES
 def get_landing_pages():
     """Get all the landing pages"""
-    result = requests.get(f'{BASE_URL}/pages?api_key={API_KEY}', verify=False)
-    click.echo({"Landing Pages": result.content, "status code": result.status_code})
+    try:
+        pages = API.pages.get()
+        if pages:
+            click.secho('Pages', bold=True, fg='green', underline=True)
+            for page in pages:
+                click.secho('Landing Page Name: {} \nPage ID: {}'.format(page.name, page.id), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
 def get_landing_page(lp_id: int):
     """Get landing page by ID"""
-    result = requests.get(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"One Landing Page": result.content, "status code": result.status_code})
+    try:
+        page = API.pages.get(page_id=lp_id)
+        if page:
+            click.secho('landing Page', bold=True, fg='green')
+            click.secho('Group Name: {}\n'.format(page.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_landing_page():
-    name = input(f'Name of Landing Page:')
-    html = input(f'HTML of Landing Page:')
-    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
-    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
-    redirect_url = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def create_landing_page(name: str, html: str, redirect_url: str, capture_credentials: bool, capture_passwords: bool):
 
-    data = {
-        "name": name,
-        "html": html,
-        "capture_credentials": capture_credentials,
-        "capture_passwords": capture_password,
-        "redirect_url": redirect_url,
-        "modified_date": modified_date
-    }
-    post_result = requests.post(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+    page = Page(
+        name=name,
+        html=html,
+        capture_credentials=capture_credentials,
+        capture_passwords=capture_passwords,
+        redirect_url=redirect_url,
+    )
+    try:
+        page = API.pages.post(page)
+        if True:
+            click.secho('Template Name: {} Created Successfully!'.format(page.name), fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def modify_landing_page():
-    name = input(f'Name of Landing Page:')
-    html = input(f'HTML of Landing Page:')
-    capture_credentials = input(f'Capture Landing page Credentials (Asw: True/False):')
-    capture_password = input(f'Capture Password on Landing page (Asw: True/False):')
-    redirect_url = input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
+def modify_landing_page(page_id, name, html, redirect_url, capture_credentials, capture_passwords):
+    try:
+        # Check existence
+        API.pages.get(page_id=page_id)
+        if True:
+            page = Page(
+                name=name,
+                html=html,
+                capture_credentials=capture_credentials,
+                capture_passwords=capture_passwords,
+                redirect_url=redirect_url,
+            )
+            try:
+                update_page = API.pages.put(page)
+                if True:
+                    click.secho('Template Name: {} Created Successfully!'.format(update_page.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
-    data = {
-        "name": name,
-        "html": html,
-        "capture_credentials": capture_credentials,
-        "capture_passwords": capture_password,
-        "redirect_url": redirect_url,
-        "modified_date": modified_date
-    }
-    post_result = requests.put(f'{BASE_URL}/pages/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
 
-
-def delete_landing_page():
-    lp_id = input(f'Enter template ID')
-    result = requests.delete(f'{BASE_URL}/pages/{lp_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete": result.content, "status code": result.status_code})
+def delete_landing_page(page_id: int):
+    try:
+        API.pages.delete(page_id=page_id)
+        click.secho('Page With ID {} Deleted Successfully'.format(page_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Page not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
 
 
 # SENDING PROFILE
 
 def get_sending_profile():
-    result = requests.get(f'{BASE_URL}/smtp?api_key={API_KEY}', verify=False)
-    click.echo({"Profile": result.content, "status code": result.status_code})
+    try:
+        profiles = API.smtp.get()
+        if profiles:
+            click.secho('Profiles', bold=True, fg='green', underline=True)
+            for smtp in profiles:
+                click.secho('Profile Name: {} \nProfile ID: {}'.format(smtp.name, smtp.id), fg='blue')
+                click.secho('{}'.format('*' * 20))
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def get_profile_by_id():
-    prof_id = input(f'Enter profile ID: ')
-    result = requests.get(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Profile": result.content, "status code": result.status_code})
+def get_profile_by_id(smtp_id: int):
+    try:
+        profile = API.smtp.get(smtp_id=smtp_id)
+        if profile:
+            click.secho('Profile', bold=True, fg='green')
+            click.secho('Profile Name: {}\n'.format(profile.name), fg='blue')
+    except Exception as e:
+        click.secho('Error: {}'.format(e))
 
 
-def create_profile():
-    name = input(f'Name of profile:')
-    username = input(f'Enter Username(Optional):')
-    password = input(f'Enter password (Optional):')
-    host = input(f'Capture Password on Landing page (Asw: True/False):')
-    interface_type = input(f'Enter Redirect URL:')
-    from_address= input(f'Enter Redirect URL:')
-    ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers= input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-    data = {
-        "name": name,
-        "username": username,
-        "password": password,
-        "host": host,
-        "interface_type": interface_type,
-        "from_address": from_address,
-        "ingore_cert_errors": ingnore_cert_errors,
-        "headers": headers,
-        "modified_date": modified_date
-    }
-    post_result = requests.post(f'{BASE_URL}/smtp/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def create_profile(name: str, interface: str, host: str, from_address: str, ignore_cert_errors: bool):
+    cert = False
+    if ignore_cert_errors == "True":
+        cert = True
+    # from_address = "John Doe <ifo@shobarafoods.biz>"
+    print(name, interface, host, from_address, cert)
+    profile = SMTP(name=name)
+    profile.interface_type = interface
+    profile.host = host
+    profile.from_address = from_address
+    profile.ignore_cert_errors = cert
+    prof = API.smtp.post(profile)
+    try:
+        # prof = API.smtp.post(profile)
+        if prof:
+            click.secho('Profile Created Successfully!', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def update_profile():
-    prof_id = input(f'Enter profile ID')
-    name = input(f'Name of profile:')
-    username = input(f'Enter Username(Optional):')
-    password = input(f'Enter password (Optional):')
-    host = input(f'Capture Password on Landing page (Asw: True/False):')
-    interface_type = input(f'Enter Redirect URL:')
-    from_address= input(f'Enter Redirect URL:')
-    ingnore_cert_errors = input(f'Enter Redirect URL:')
-    headers= input(f'Enter Redirect URL:')
-    modified_date = input(f'Enter Date:')  # use date.now()
-
-    data = {
-        "name": name,
-        "username": username,
-        "password": password,
-        "host": host,
-        "interface_type": interface_type,
-        "from_address": from_address,
-        "ingore_cert_errors": ingnore_cert_errors,
-        "headers": headers,
-        "modified_date": modified_date
-    }
-    post_result = requests.put(f'{BASE_URL}/smtp/{prof_id}/?api_key={API_KEY}', verify=False, data=data)
-    click.echo({"Response": post_result.content, "Status Code": post_result.status_code})
+def update_profile(profile_id, name, from_address, interface_type, host, ignore_cert_errors):
+    try:
+        # Check existence
+        API.smtp.get(smtp_id=profile_id)
+        if True:
+            prof = SMTP(
+                name=name,
+                from_address=from_address,
+                interface_type=interface_type,
+                host=host,
+                ignore_cert_errors=ignore_cert_errors,
+            )
+            try:
+                update_profile = API.smtp.put(prof)
+                if True:
+                    click.secho('Profile Name: {} Updated Successfully!'.format(update_profile.name), fg='green')
+            except Exception as e:
+                click.secho("Error: {}".format(e), blink=True, fg='red')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def delete_profile():
-    prof_id = input(f'Enter profile ID: ')
-    result = requests.delete(f'{BASE_URL}/smtp/:{prof_id}?api_key={API_KEY}', verify=False)
-    click.echo({"Delete Profile": result.content, "status code": result.status_code})
+def delete_profile(smtp_id: int):
+    try:
+        API.smtp.delete(smtp_id=smtp_id)
+        click.secho('Profile With ID {} Deleted Successfully'.format(smtp_id), bold=True, fg='green')
+    except Exception as e:
+        click.secho('Profile not deleted', bold=True, fg='yellow')
+        click.secho('Error: {}'.format(e), bold=True, fg='red')
