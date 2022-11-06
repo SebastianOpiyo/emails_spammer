@@ -1,7 +1,7 @@
 # How to Setup Gophish
 - Download & extract the release for your system, and run the binary.
-- Build the binary with the following command:  *go build*
-- In case of any sqlite3 errors during building use the following command *go env -w CGO_CFLAGS="-g -O2 -Wno-return-local-addr"* 
+- Build the binary with the following command:  ```go build```
+- In case of any sqlite3 errors during building use the following command ```go env -w CGO_CFLAGS="-g -O2 -Wno-return-local-addr"``` 
 - If you encounter port error use the following command:
     netsh http add iplisten ipaddress=::
 

@@ -4,10 +4,11 @@ from model import *
 
 @app.route('/', methods=["GET"])
 def home():
-    if "username" in session:
-        return render_template('index.html')
-    else:
-        return render_template('login.html')
+    # if "username" in session:
+    #     return render_template('index.html')
+    # else:
+    #     return render_template('login.html')
+    return  render_template('index.html')
 
 
 # Register new user
@@ -66,7 +67,7 @@ def blank():
 #Buttons Page
 @app.route('/buttons', methods=["GET"])
 def buttons():
-    return render_template("buttons.html")
+    return render_template("campaigns.html")
 
 #Cards Page
 @app.route('/cards', methods=["GET"])
@@ -86,12 +87,12 @@ def tables():
 #Utilities-animation
 @app.route('/utilities-animation', methods=["GET"])
 def utilitiesanimation():
-    return render_template("utilities-animation.html")
+    return render_template("groups.html")
 
 #Utilities-border
 @app.route('/utilities-border', methods=["GET"])
 def utilitiesborder():
-    return render_template("utilities-border.html")
+    return render_template("templates.html")
 
 #Utilities-color
 @app.route('/utilities-color', methods=["GET"])
@@ -101,4 +102,4 @@ def utilitiescolor():
 #utilities-other
 @app.route('/utilities-other', methods=["GET"])
 def utilitiesother():
-    return render_template("utilities-other.html")
+    return render_template("user_management.html")
