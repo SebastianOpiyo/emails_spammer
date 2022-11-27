@@ -1,6 +1,8 @@
 from flask import render_template, request, redirect, url_for, session
 from web import app
 from model import *
+from api_points import get_campaign_stats
+
 
 @app.route('/', methods=["GET"])
 def home():
@@ -8,7 +10,8 @@ def home():
     #     return render_template('index.html')
     # else:
     #     return render_template('login.html')
-    return  render_template('index.html')
+    data = get_campaign_stats()
+    return render_template('index.html', data=data)
 
 
 # Register new user

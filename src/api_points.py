@@ -94,13 +94,24 @@ def get_campaigns_summaries():
     try:
         summaries = API.campaigns.summary()
         if summaries:
-            collection = summaries.stats.as_dict()
+            collection = summaries.as_dict()
             click.echo(collection)
             click.secho('Campaign Summaries', bold=True, fg='green', underline=True)
             for k, v in collection:
                 click.secho('Summary: {} {}'.format(k, v), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e))
+
+
+def get_campaign_stats():
+    """Get campaign stats."""
+    try:
+        summary = API.campaigns.summary()
+        if summary:
+            stats = summary.as_dict()["stats"]
+            return stats
+    except Exception as e:
+        return 'Error: {}'.format(e)
 
 
 def delete_campaign(campaign_id: int):
