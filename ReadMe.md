@@ -9,7 +9,8 @@ follow the instructions below to achieve just that.
 - If you encounter port error use the following command:
     netsh http add iplisten ipaddress=::
 
-- Look the terminal once it is running fine for the login credentials
+- copy the URL to access the web application.
+- Look the terminal once it is running to find the login credentials
     *username: admin*
     *password: randomly generated string* example: 0b3f78e370494356jhfdh
 
