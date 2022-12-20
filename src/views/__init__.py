@@ -6,10 +6,10 @@ from api_points import get_campaign_stats
 
 @app.route('/', methods=["GET"])
 def home():
-    # if "username" in session:
-    #     return render_template('index.html')
-    # else:
-    #     return render_template('login.html')
+    if "username" in session:
+        return render_template('index.html')
+    else:
+        return render_template('login.html')
     data = get_campaign_stats()
     return render_template('index.html', data=data)
 
