@@ -11,6 +11,7 @@ def home():
     else:
         return render_template('login.html')
     data = get_campaign_stats()
+    print(data)
     return render_template('index.html', data=data)
 
 
@@ -21,7 +22,7 @@ def register():
         return render_template("register.html")
     elif request.method == "POST":
         registerUser()
-        return redirect(url_for("login"))
+    return redirect(url_for("login"))
 
 #Check if email already exists in the registratiion page
 @app.route('/checkusername', methods=["POST"])
