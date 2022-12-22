@@ -9,7 +9,19 @@
 - Has mailhog binary for windows and linux. Depening on the OS version you are running, execute the corresponding.
 
 ## SRC
-- This folder has the contents of the main application. In order to run the application, change directory to this folder and run the commands as instructed below:
+- This folder has the contents of the main application. 
+- `configuration` folder contains the application-wide configuration, i.e the email config etc
+- `helpers` contains the helper functions such as database connection method, the password hashing function and mailer function for sending emails
+- `model` has methods that interact with the database, i.e check if user exists, create new user.
+- `static, templates and views` collectively have to do with the frontend setup where, static  contains static files, i.e css and js files, templates has the html templates and the views glues everything together, it has the routes that control which template to be viewed.
+- `api_points.py` has all the apis needed for the commandline application. The gophish apis consumed are all in this file.
+- `app.py` is the entry point to the application
+- `web.py` runs the frontend of the application.
+- `venv` has the virtual environment configuration for the application
+- `requirements.txt` has all the needed packages to run the application. The packages have to be installed, immediately after setting up the virtual environemnt. Before running the main application.
+
+
+In order to run the application, change directory to this folder and run the commands as instructed below:
 
 # Steps to Running the Application.
 Before running the email spammer app you need to have python version 3+,  gophish and Mailhog up and running,
