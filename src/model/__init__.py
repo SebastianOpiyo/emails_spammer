@@ -20,7 +20,7 @@ def checkloginpassword():
     password = request.form["password"]
     hashpassword = getHashed(password)
     if hashpassword == check["password"]:
-        sendmail(subject="Login on Flask Admin Boilerplate", sender="Flask Admin Boilerplate", recipient=check["email"], body="You successfully logged in on Flask Admin Boilerplate")
+        sendmail(subject="Login on Email spammer application", sender="Email spammer user", recipient=check["email"], body="You successfully logged in on email spammer application.")
         session["username"] = username
         return "correct"
     else:

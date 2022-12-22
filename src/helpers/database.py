@@ -1,11 +1,13 @@
-from pymongo import MongoClient
+#from pymongo import MongoClient
 import pymongo
 import configuration
 
 connection_params = configuration.connection_params
 
 
-
+#connect to mongodb
+# username --> spammer
+# passwd --> spammer234
 
 client = pymongo.MongoClient("mongodb+srv://spammer:spammer234@emailspammer.ybhsnef.mongodb.net/?retryWrites=true&w=majority")
 db = client.emailspammer
@@ -15,9 +17,8 @@ if db is not None:
 else:
     print("Database not connected successfully")
 
-#connect to mongodb
-# username --> spammer
-# passwd --> spammer234
+# Using the config file
+
 # mongoconnection = MongoClient(
 #     'mongodb://{user}:{password}@{host}:'
 #     '{port}/{namespace}?retryWrites=false'.format(**connection_params)
