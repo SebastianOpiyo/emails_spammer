@@ -109,6 +109,14 @@ def getCampaignsSummaries():
 
 
 @click.command()
+def getCampaignStats():
+    """Get campaign statics."""
+    from api_points import get_campaign_stats
+    get_campaign_stats()
+
+
+
+@click.command()
 @click.option('--campaign_id', prompt="Enter Campaign ID:", help="Pass campaign ID")
 def deleteCampaign(campaign_id):
     """Delete a campaign"""
@@ -346,6 +354,7 @@ main.add_command(getSingleCampaign)
 main.add_command(createNewCampaign)
 main.add_command(getCampaignSummary)
 main.add_command(getCampaignsSummaries)
+main.add_command(getCampaignStats)
 main.add_command(deleteCampaign)
 main.add_command(markCampaignComplete)
 main.add_command(getGroups)
