@@ -43,6 +43,14 @@ def testapi():
     test_api()
 
 
+# MANAGE USERS
+@click.command()
+def getUsers():
+    """Gets the list of all users in the registered in the system."""
+    from api_points import get_users
+    get_users()
+
+
 # INITIATE WEB APP
 
 @click.command()
@@ -377,6 +385,8 @@ main.add_command(getProfileById)
 main.add_command(createProfile)
 main.add_command(updateProfile)
 main.add_command(deleteProfile)
+main.add_command(getUsers)
+
 
 if __name__ == "__main__":
     main()

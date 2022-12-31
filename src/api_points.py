@@ -30,6 +30,30 @@ def reset_api_key():
     data = json.dumps({'result': result.content.decode('utf-8')})
     click.echo(f"NEW API KEY: {data}, \nStatus Code: {result.status_code}")
 
+# USER MANAGEMENT
+# Signup and User Management
+def get_users():
+    result = requests.get(f'{BASE_URL}/users/?api_key={API_KEY}', verify=False)
+    data = json.loads(result.content)
+    click.echo('Users Data \n')
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"Users: {data}, \nStatus Code: {result.status_code}")
+
+
+def get_user():
+    pass
+
+
+def create_user():
+    pass
+
+
+def modify_user():
+    pass
+
+
+def delete_user():
+    pass
 
 # CAMPAIGNS
 # Retrieve all campaigns
