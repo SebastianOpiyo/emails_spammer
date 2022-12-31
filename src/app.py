@@ -51,6 +51,14 @@ def getUsers():
     get_users()
 
 
+@click.command()
+@click.option('--user_id', prompt="Enter User ID:", help="Get User ID")
+def getUser(user_id):
+    """Gets the list of all users in the registered in the system."""
+    from api_points import get_user
+    get_user(int(user_id))
+
+
 # INITIATE WEB APP
 
 @click.command()
@@ -386,7 +394,7 @@ main.add_command(createProfile)
 main.add_command(updateProfile)
 main.add_command(deleteProfile)
 main.add_command(getUsers)
-
+main.add_command(getUser)
 
 if __name__ == "__main__":
     main()

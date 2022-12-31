@@ -40,8 +40,13 @@ def get_users():
     click.echo(f"Users: {data}, \nStatus Code: {result.status_code}")
 
 
-def get_user():
-    pass
+def get_user(user_id:int):
+    """Get user details given user ID"""
+    result = requests.get(f'{BASE_URL}/users/{user_id}/?api_key={API_KEY}', verify=False)
+    data = json.loads(result.content)
+    click.echo('User Data \n')
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"User Data: {data}, \nStatus Code: {result.status_code}")
 
 
 def create_user():
