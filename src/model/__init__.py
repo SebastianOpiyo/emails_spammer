@@ -1,5 +1,3 @@
-
-from web import app
 from flask import request, session
 
 from helpers.database import *
