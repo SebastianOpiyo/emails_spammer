@@ -13,3 +13,4 @@ pymongo
 python-http-client
 shortuuid
 Werkzeug
+urllib3

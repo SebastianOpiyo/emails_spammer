@@ -59,6 +59,17 @@ def getUser(user_id):
     get_user(int(user_id))
 
 
+@click.command()
+@click.option('--username', prompt="Enter Username:", help="New username")
+@click.option('--password', prompt="Enter password:", help="User password")
+@click.option('--role', prompt="Enter User role:", help="Role for the user.")
+def createNewUser(username, password, role):
+    """Create a new campaign"""
+    from api_points import create_user
+    create_user(username=username, password=password, role=role)
+
+
+
 # INITIATE WEB APP
 
 @click.command()
@@ -395,6 +406,8 @@ main.add_command(updateProfile)
 main.add_command(deleteProfile)
 main.add_command(getUsers)
 main.add_command(getUser)
+main.add_command(createNewUser)
+
 
 if __name__ == "__main__":
     main()

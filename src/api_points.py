@@ -3,7 +3,7 @@ import requests
 import click
 import urllib3
 from datetime import datetime
-from gophish import Gophish, models, api
+from gophish import Gophish
 from gophish.models import *
 
 urllib3.disable_warnings()
@@ -49,8 +49,19 @@ def get_user(user_id:int):
     click.echo(f"User Data: {data}, \nStatus Code: {result.status_code}")
 
 
-def create_user():
-    pass
+def create_user(username:str, password:str, role:str):
+    user_data = {
+        "username":username,
+        "password":password,
+        "role": role
+    }
+
+    try:
+        post_user = requests.post(url=f'{BASE_URL}/users/?api_key={API_KEY}', data=user_data,verify=False)
+        if post_user:
+            click.secho(f'User created successfully,\n Status code:{post_user.status_code}', fg='green')
+    except Exception as e:
+        click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
 def modify_user():
@@ -411,15 +422,14 @@ def create_profile(name: str, interface: str, host: str, from_address: str, igno
     if ignore_cert_errors == "True":
         cert = True
     # from_address = "John Doe <ifo@shobarafoods.biz>"
-    print(name, interface, host, from_address, cert)
     profile = SMTP(name=name)
     profile.interface_type = interface
     profile.host = host
     profile.from_address = from_address
     profile.ignore_cert_errors = cert
     prof = API.smtp.post(profile)
+
     try:
-        # prof = API.smtp.post(profile)
         if prof:
             click.secho('Profile Created Successfully!', fg='green')
     except Exception as e:
