@@ -2,12 +2,6 @@ from importlib.metadata import entry_points
 import logging
 import click
 
-from flask import Flask, render_template, request
-from gophish import Gophish, models, api
-from gophish.models import *
-from setuptools import setup
-
-
 #   SETUP TOOL
 # setup(
 #     name="emailspammer",

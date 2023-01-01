@@ -57,19 +57,29 @@ def create_user(username:str, password:str, role:str):
     }
 
     try:
-        post_user = requests.post(url=f'{BASE_URL}/users/?api_key={API_KEY}', data=user_data,verify=False)
+        post_user = requests.post(url=f'{BASE_URL}/users/?api_key={API_KEY}', json=user_data, verify=False)
         if post_user:
             click.secho(f'User created successfully,\n Status code:{post_user.status_code}', fg='green')
     except Exception as e:
         click.secho("Error: {}".format(e), blink=True, fg='red')
 
 
-def modify_user():
-    pass
+def modify_user(user_id:int):
+    """TODO: Pass in the needed data"""
+
+    result = requests.put(f'{BASE_URL}/users/?id={user_id}/?api_key={API_KEY}', verify=False)
+    data = json.loads(result.content)
+    click.echo('User Data \n')
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"User Data: {data}, \nStatus Code: {result.status_code}")
 
 
-def delete_user():
-    pass
+def delete_user(user_id:int):
+    result = requests.delete(f'{BASE_URL}/users/?id={user_id}/?api_key={API_KEY}', verify=False)
+    data = json.loads(result.content)
+    click.echo('User Data \n')
+    click.echo({"header_type": [result.headers['content-type']]})
+    click.echo(f"User Data: {data}, \nStatus Code: {result.status_code}")
 
 # CAMPAIGNS
 # Retrieve all campaigns
@@ -78,8 +88,8 @@ def retrieve_all_campaign():
     data = API.campaigns.get()
     if not data:
         click.secho('No Campaigns Created Yet', blink=True, bold=True, fg='red')
+    click.secho('CAMPAIGNS', bold=True, fg='green', underline=True)
     for campaign in data:
-        click.secho('CAMPAIGNS', bold=True, fg='green', underline=True)
         click.secho('ID: {}, Name: {}'.format(campaign.id, campaign.name), fg='blue')
 
 

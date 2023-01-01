@@ -7,12 +7,11 @@ from api_points import get_campaign_stats
 @app.route('/', methods=["GET"])
 def home():
     if "username" in session:
-        return render_template('index.html')
+        campaign_data = get_campaign_stats()
+        username = session["username"]
+        return render_template('index.html', data={"campaign":campaign_data, "username":username})
     else:
         return render_template('login.html')
-    data = get_campaign_stats()
-    print(data)
-    return render_template('index.html', data=data)
 
 
 # Register new user
@@ -57,53 +56,3 @@ def logout():  # logout function
 @app.route('/forgot-password', methods=["GET"])
 def forgotpassword():
     return render_template('forgot-password.html')
-
-#404 Page
-@app.route('/404', methods=["GET"])
-def errorpage():
-    return render_template("404.html")
-
-#Blank Page
-@app.route('/blank', methods=["GET"])
-def blank():
-    return render_template('blank.html')
-
-#Buttons Page
-@app.route('/buttons', methods=["GET"])
-def buttons():
-    return render_template("campaigns.html")
-
-#Cards Page
-@app.route('/cards', methods=["GET"])
-def cards():
-    return render_template('cards.html')
-
-#Charts Page
-@app.route('/charts', methods=["GET"])
-def charts():
-    return render_template("charts.html")
-
-#Tables Page
-@app.route('/tables', methods=["GET"])
-def tables():
-    return render_template("tables.html")
-
-#Utilities-animation
-@app.route('/utilities-animation', methods=["GET"])
-def utilitiesanimation():
-    return render_template("groups.html")
-
-#Utilities-border
-@app.route('/utilities-border', methods=["GET"])
-def utilitiesborder():
-    return render_template("templates.html")
-
-#Utilities-color
-@app.route('/utilities-color', methods=["GET"])
-def utilitiescolor():
-    return render_template("utilities-color.html")
-
-#utilities-other
-@app.route('/utilities-other', methods=["GET"])
-def utilitiesother():
-    return render_template("user_management.html")
