@@ -146,20 +146,78 @@ def get_campaigns_summaries():
         if summaries:
             collection = summaries.as_dict()
             click.echo(collection)
-            click.secho('Campaign Summaries', bold=True, fg='green', underline=True)
-            for k, v in collection:
-                click.secho('Summary: {} {}'.format(k, v), fg='blue')
+            click.secho('Campaigns Summaries', bold=True, fg='green', underline=True)
+            for k in collection['campaigns']:
+                click.secho('Campaign Summary: {}'.format(k), fg='blue')
     except Exception as e:
         click.secho('Error: {}'.format(e))
 
 
 def get_campaign_stats():
-    """Get campaign stats."""
+    """Get campaign stats.
+    Attributes
+    * total(int) total number of targets in the campaign
+    * sent(int) number of emails successfully sent
+    * opened(int) number of emails opened
+    * clicked(int) number of emails clicked by recipients in the campaign
+    * submitted_data(int) number of captured credentials from the campaign
+    * email_reported(int) number of emails reported from the campaign
+    * error(int)
+    """
+    emails_total = 0
+    emails_sent = 0
+    emails_opened = 0
+    clicked_link = 0
+    submitted_data = 0
+    email_reported = 0
+    in_progress = 0
     try:
         summary = API.campaigns.summary()
         if summary:
-            stats = summary.as_dict()["stats"]
+            stats = summary.as_dict()
             return stats
+    except Exception as e:
+        return 'Error: {}'.format(e)
+
+def get_stats():
+    """Statistical information of all the campaigns in totality."""
+
+    collection_stat = {"total_campaigns":0, "emails_total":0, "emails_sent":0, "emails_opened":0, "clicked_link":0,
+                       "submitted_data":0, "email_reported":0, "email_error":0}
+
+    try:
+        summary = API.campaigns.summary()
+        if summary:
+            stats = summary.as_dict()
+            collection_stat["total_campaigns"] = stats['total']
+
+            for data in stats['campaigns']:
+                """    Attributes
+                * total(int) total number of targets in the campaign
+                * sent(int) number of emails successfully sent
+                * opened(int) number of emails opened
+                * clicked(int) number of emails clicked by recipients in the campaign
+                * submitted_data(int) number of captured credentials from the campaign
+                * email_reported(int) number of emails reported from the campaign
+                * error(int)"""
+
+                if "total" in data['stats']:
+                    collection_stat["emails_total"] += data['stats']['total']
+                if "sent" in data['stats']:
+                    collection_stat["emails_sent"] += data['stats']['sent']
+                if "opened" in data['stats']:
+                    collection_stat["emails_opened"] += data['stats']['opened']
+                if "clicked" in data['stats']:
+                    collection_stat["clicked_link"] += data['stats']['clicked']
+                if "submitted_data" in data['stats']:
+                    collection_stat["submitted_data"] += data['stats']['submitted_data']
+                if "email_reported" in data['stats']:
+                    collection_stat["email_reported"] += data['stats']['email_reported']
+                if "error" in data['stats']:
+                    collection_stat["email_error"] += data['stats']['error']
+
+            return collection_stat
+
     except Exception as e:
         return 'Error: {}'.format(e)
 
