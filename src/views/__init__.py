@@ -1,13 +1,13 @@
 from flask import render_template, request, redirect, url_for, session
 from web import app
 from model import *
-from api_points import get_campaign_stats
+from api_points import get_stats
 
 
 @app.route('/', methods=["GET"])
 def home():
     if "username" in session:
-        campaign_data = get_campaign_stats()
+        campaign_data = get_stats()
         username = session["username"]
         return render_template('index.html', data={"campaign":campaign_data, "username":username})
     else:

@@ -164,13 +164,6 @@ def get_campaign_stats():
     * email_reported(int) number of emails reported from the campaign
     * error(int)
     """
-    emails_total = 0
-    emails_sent = 0
-    emails_opened = 0
-    clicked_link = 0
-    submitted_data = 0
-    email_reported = 0
-    in_progress = 0
     try:
         summary = API.campaigns.summary()
         if summary:
